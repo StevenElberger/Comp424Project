@@ -1,8 +1,8 @@
 <?php
 
-	require_once("/PHPMailer/class.phpmailer.php");
-	require_once("/PHPMailer/class.smtp.php");
-	require_once("/definitions.php");
+	require_once("/var/www/html/Comp424Project/private/PHPMailer/class.phpmailer.php");
+	require_once("/var/www/html/Comp424Project/private/PHPMailer/class.smtp.php");
+	require_once("/var/www/html/Comp424Project/private/definitions.php");
 // Reset token functions
 
 // Note: This implementation is based on a Tutorial
