@@ -72,6 +72,7 @@
                             }
                             // Grab the password for the given username
                             $sql = "SELECT password FROM users WHERE username = '" . $username . "'";
+                            
                             $result = $conn->query($sql);
                             // If there's a match, check to make sure authentication was successful
                             if ($result->num_rows > 0) {
@@ -157,7 +158,8 @@
                             <button type="submit" class="btn btn-lg btn-block btn-primary validate">Login</button>
                 </form>
                             <a class="text-center" style="display:block;" href="createaccount.php">New user? Sign up</a>
-                            <a class="text-center" style="display: block;" href="public/forgot_password.php">Forgot your username or password?</a>
+                            <a class="text-center" style="display: block;" href="public/forgot_username.php">Forgot your username?</a>
+                            <a class="text-center" style="display: block;" href="public/forgot_password.php">Forgot your password?</a>
                         </div>
             </fieldset>
         </div><!-- /.container -->

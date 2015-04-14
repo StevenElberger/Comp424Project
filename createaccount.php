@@ -23,8 +23,10 @@
             // Error placeholders
             $firstNameError = $lastNameError = $usernameError = $mismatchError = "";
             $passwordError = $confirmError = $emailError =  $companyError = $phoneError = $requiredFields = "";
+            $securityQuestionError = $securityAnswerError = "";
             // Placeholders for variables from form
             $username = $password = $confirm = $first_name = $last_name = $email = $company = $phone = "";
+            $security_question = $security_answer = "";
 
             // in case form was submitted and the username already exists
             if (isset($usernameError)) {
@@ -70,6 +72,18 @@
                 } else {
                     $email = test_input($_POST["email"]);
                 }
+                
+                if (empty($_POST["security_question"])) {
+                    $securityQuestionError = "*";
+                } else {
+                    $security_question = test_input($_POST["security_question"]);
+                }
+                
+                if (empty($_POST["security_answer"])) {
+                    $securityAnswerError = "*";
+                } else {
+                    $security_answer = test_input($_POST["security_answer"]);
+                }
 
                 if (empty($_POST["company"])) {
                     $companyError = "*";
@@ -89,8 +103,9 @@
             }
 
             // As long as all variables were initialized, the data is good to go
-            if (($first_name !== "") && ($last_name !== "") && ($username !== "") && ($company !== "")
-                && ($phone !== "") && ($password !== "") && ($confirm !== "") && ($mismatchError === "")) {
+            if (($first_name !== "") && ($last_name !== "") && ($username !== "") && ($company !== "") && ($email !== "")
+                && ($securityAnswer !== "") &&($phone !== "") && ($password !== "") && ($confirm !== "") && 
+                ($securityQuestion !== "") && ($mismatchError === "")) {
 
                 // Store the hash, not the pass
                 $hash_pass = password_hash($password, PASSWORD_BCRYPT);
@@ -105,7 +120,9 @@
 
                 // Adds a new user account with form data into the physician table of the database
                 // -- To do: form checking (e.g., username already exists, security, etc.)
-                $sql = "INSERT INTO users (username, password, first_name, last_name, company, phone, email) VALUES ('".$username."', '".$hash_pass."', '".$first_name."', '".$last_name."', '".$company."', '".$phone."', '".$email."')";
+                $sql = "INSERT INTO users (username, password, first_name, last_name, security_question, security_answer, company, phone, email) 
+                VALUES ('".$username."', '".$hash_pass."', '".$first_name."', '".$last_name."', '".$security_question."', '".$security_answer.
+                "', '".$company."', '".$phone."', '".$email."')";
 
                 if (username_exists($username, $conn)) {
                     $usernameError = "<div class='alert alert-danger' id='username-exists' role='alert'>";
@@ -211,12 +228,30 @@
                             </div>
                         </div>
                     </div>
+                    <div class="form-group" id="security-question-input">
+                        <div class="col-md-12">
+                            <label>Security Question:</label><label class="control-label" id="security-question-control"></label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><span class="glyphicon">Q?</span></span>
+                                <input type="text" id="security_question" name="security_question" class="form-control" value="<?php echo $security_question; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="Enter a Question that you can answer" data-parsley-required="true" data-parsley-group="block7" data-parsley-ui-enabled="false">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="security-answer-input">
+                        <div class="col-md-12">
+                            <label>Security Question Answer:</label><label class="control-label" id="security-answer-control"></label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><span class="glyphicon">ANS</span></span>
+                                <input type="text" id="security_answer" name="security_answer" class="form-control" value="<?php echo $security_answer; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="Answer to Security Question" data-parsley-required="true" data-parsley-group="block8" data-parsley-ui-enabled="false">
+                            </div>
+                        </div>
+                    </div>
                     <div class="form-group" id="company-input">
                         <div class="col-md-12">
                             <label>Company:</label>
                             <div class="input-group">
                                 <span class="input-group-addon"><span class="glyphicon glyphicon-globe"></span></span>
-                                <input type="text" id="company" name="company" class="form-control" value="<?php echo $company; ?>" data-parsley-required="true" data-parsley-group="block7" data-parsley-ui-enabled="false">
+                                <input type="text" id="company" name="company" class="form-control" value="<?php echo $company; ?>" data-parsley-required="true" data-parsley-group="block9" data-parsley-ui-enabled="false">
                             </div>
                         </div>
                     </div>
@@ -225,7 +260,7 @@
                             <label>Phone:</label>
                             <div class="input-group">
                                 <span class="input-group-addon"><span class="glyphicon glyphicon-phone"></span></span>
-                                <input type="text" id="phone" name="phone" class="form-control" value="<?php echo $phone; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="7 - 10 digits" data-parsley-required="true" data-parsley-type="digits" data-parsley-length="[7, 10]" data-parsley-group="block8" data-parsley-ui-enabled="false">
+                                <input type="text" id="phone" name="phone" class="form-control" value="<?php echo $phone; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="7 - 10 digits" data-parsley-required="true" data-parsley-type="digits" data-parsley-length="[7, 10]" data-parsley-group="block10" data-parsley-ui-enabled="false">
                             </div>
                             <button type="submit" style="margin-top: 5%;" class="btn btn-lg btn-block btn-primary validate">Create Account</button>
                         </div>
@@ -254,11 +289,13 @@
                     var password = formInstance.isValid('block4', true);
                     var confirm = formInstance.isValid('block5', true);
                     var email = formInstance.isValid('block6', true);
-                    var company = formInstance.isValid('block7', true);
-                    var phone = formInstance.isValid('block8', true);
+                    var securityQuestion = formInstance.isValid('block7', true);
+                    var securityAnswer = formInstance.isValid('block8', true);
+                    var company = formInstance.isValid('block9', true);
+                    var phone = formInstance.isValid('block10', true);
 
                     if (firstName && lastName && username && password && confirm
-                        && email && company && phone) {
+                        && email && securityQuestion && securityAnswer && company && phone) {
                         return;
                     }
 
@@ -311,6 +348,20 @@
                         $('#confirm').popover('show');
                     } else {
                         $('#confirm-input').removeClass("has-error");
+                    }
+                    
+                    if (!securityQuestion) {
+                        $('#security-question-input').addClass("has-error");
+                        $('#security_question').popover('show');
+                    } else {
+                        $('#security-question-input').removeClass("has-error");
+                    }
+                    
+                    if (!securityAnswer) {
+                        $('#security-answer-input').addClass("has-error");
+                        $('#security_answer').popover('show');
+                    } else {
+                        $('#security-answer-input').removeClass("has-error");
                     }
 
                     if (!email) {

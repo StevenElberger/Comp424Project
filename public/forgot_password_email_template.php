@@ -15,7 +15,7 @@
 	</head>
 	<body style="color: #555555 background-color: #ffffff">
 		
-		<h1 class="text-center" style="color: #317eac">HealthMate</h1>
+		<h1 class="text-center" style="color: #317eac">Comp 424 Security Site</h1>
 		
 		<p style="color: #3a87ad">
 			There was a request to reset the password for an account associated with this email
@@ -25,8 +25,8 @@
 		
 		<p>
 			
-			<a href="[[ip_address]]/HealthMateTest/public/reset_password.php?token=[[token]]">
-				[[ip_address]]/HealthMateTest/public/reset_password.php?token=[[token]]</a>
+			<a href="[[ip_address]]/Comp424Project/public/reset_password.php?token=[[token]]">
+				[[ip_address]]/Comp424Project/public/reset_password.php?token=[[token]]</a>
 		</p>
 
 		<p>
