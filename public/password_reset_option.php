@@ -3,6 +3,10 @@
 <?php
 session_start();
 
+if (!isset($_SESSION["username"])) {
+	echo header("Location: /Comp424Project/public/forgot_password.php");
+}
+
 if(request_is_post() && request_is_same_domain()) {
 	
   if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
@@ -12,7 +16,7 @@ if(request_is_post() && request_is_same_domain()) {
     if ($_POST["auth_method"] == "email") {
 		 echo header("Location: /Comp424Project/public/send_email_authentication.php");
     } else {
-	    echo header("Location: /Comp424Project/public/security_question_authentication.php");
+	    echo header("Location: /Comp424Project/public/birthday_verification.php");
     }
   }
 }

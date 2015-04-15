@@ -23,10 +23,10 @@
             // Error placeholders
             $firstNameError = $lastNameError = $usernameError = $mismatchError = "";
             $passwordError = $confirmError = $emailError =  $companyError = $phoneError = $requiredFields = "";
-            $securityQuestionError = $securityAnswerError = "";
+            $securityQuestionError = $securityAnswerError = $birthdayError = "";
             // Placeholders for variables from form
             $username = $password = $confirm = $first_name = $last_name = $email = $company = $phone = "";
-            $security_question = $security_answer = "";
+            $security_question = $security_answer = $birthday = "";
 
             // in case form was submitted and the username already exists
             if (isset($usernameError)) {
@@ -96,6 +96,11 @@
                 } else {
                     $phone = test_input($_POST["phone"]);
                 }
+                if (empty($_POST["birthday"])) {
+                    $birthdayError = "*";
+                } else {
+                    $birthday = test_input($_POST["birthday"]);
+                }
 
                 if ($password !== $confirm) {
                     $mismatchError = "Passwords do not match";
@@ -105,7 +110,7 @@
             // As long as all variables were initialized, the data is good to go
             if (($first_name !== "") && ($last_name !== "") && ($username !== "") && ($company !== "") && ($email !== "")
                 && ($securityAnswer !== "") &&($phone !== "") && ($password !== "") && ($confirm !== "") && 
-                ($securityQuestion !== "") && ($mismatchError === "")) {
+                ($securityQuestion !== "") && ($mismatchError === "") && ($birthday !== "")) {
 
                 // Store the hash, not the pass
                 $hash_pass = password_hash($password, PASSWORD_BCRYPT);
@@ -120,9 +125,9 @@
 
                 // Adds a new user account with form data into the physician table of the database
                 // -- To do: form checking (e.g., username already exists, security, etc.)
-                $sql = "INSERT INTO users (username, password, first_name, last_name, security_question, security_answer, company, phone, email) 
+                $sql = "INSERT INTO users (username, password, first_name, last_name, security_question, security_answer, company, phone, email, birthday) 
                 VALUES ('".$username."', '".$hash_pass."', '".$first_name."', '".$last_name."', '".$security_question."', '".$security_answer.
-                "', '".$company."', '".$phone."', '".$email."')";
+                "', '".$company."', '".$phone."', '".$email."', '".$birthday."')";
 
                 if (username_exists($username, $conn)) {
                     $usernameError = "<div class='alert alert-danger' id='username-exists' role='alert'>";
@@ -262,7 +267,16 @@
                                 <span class="input-group-addon"><span class="glyphicon glyphicon-phone"></span></span>
                                 <input type="text" id="phone" name="phone" class="form-control" value="<?php echo $phone; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="7 - 10 digits" data-parsley-required="true" data-parsley-type="digits" data-parsley-length="[7, 10]" data-parsley-group="block10" data-parsley-ui-enabled="false">
                             </div>
-                            <button type="submit" style="margin-top: 5%;" class="btn btn-lg btn-block btn-primary validate">Create Account</button>
+                        </div>
+                    </div>
+                    <div class="form-group" id="birthday-input">
+                        <div class="col-md-12">
+                            <label>Birthday:</label>
+                            <div class="input-group">
+										  <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+										  <input type="date" id="birthday" name = "birthday" style="margin-top: 15px; margin-left: 15px;" data-parsley-required="true" data-container="body" data-toggle="popover" data-trigger="focus" data-content="Please Enter a Birthday" data-parsley-group="block11" data-parsley-ui-enabled="false">
+                            </div>
+                             <button type="submit" style="margin-top: 5%;" class="btn btn-lg btn-block btn-primary validate">Create Account</button>
                         </div>
                     </div>
                 </form>
@@ -293,9 +307,10 @@
                     var securityAnswer = formInstance.isValid('block8', true);
                     var company = formInstance.isValid('block9', true);
                     var phone = formInstance.isValid('block10', true);
+                    var birthday = formInstance.isValid('block11', true);
 
                     if (firstName && lastName && username && password && confirm
-                        && email && securityQuestion && securityAnswer && company && phone) {
+                        && email && securityQuestion && securityAnswer && company && phone && birthday) {
                         return;
                     }
 
@@ -382,6 +397,13 @@
                         $('#phone').popover('show');
                     } else {
                         $('#phone-input').removeClass("has-error");
+                    }
+                    
+                    if (!birthday) {
+                        $('#birthday-input').addClass("has-error");
+                        $('#birthday').popover('show');
+                    } else {
+                        $('#birthday-input').removeClass("has-error");
                     }
                 });
             });

@@ -5,7 +5,6 @@ session_start();
 
 $message = "";
 $token = "";
-//$token = $_GET['token'];
 
 if (isset($_SESSION['token'])) {
 	$token = $_SESSION['token'];

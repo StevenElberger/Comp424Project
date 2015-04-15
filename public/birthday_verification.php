@@ -10,9 +10,7 @@ if (!isset($_SESSION["username"])) {
 // initialize variables to default values
 $username = $_SESSION["username"];
 
-$securityQuestion = "";
-$securityAnswer = "";
-
+$birthday = "";
 $message = "";
 $error = false;
 
@@ -32,13 +30,10 @@ $users = $db->query($sql_statement);
 
 // check if anything was returned by database
 if ($users->num_rows > 0) {
-	// fetch the first row of the results of the query
-	$row = $users->fetch_assoc();
-	$securityQuestion = $row['security_question'];
+	$error = false;
 }
 else {
 	$error = true;
-	$securityQuestion = "What is the name of your first love?";
 }
 
 if(request_is_post() && request_is_same_domain()) {
@@ -47,9 +42,9 @@ if(request_is_post() && request_is_same_domain()) {
   	$message = "Sorry, request was not valid.";
   } else {
     // CSRF tests passed--form was created by us recently.
-    $securityAnswer = $_POST["security_answer"];
+    $birthdayResponse = $_POST["birthday"];
     
-		if(!empty($securityAnswer)) {
+		if(!empty($birthdayResponse)) {
    
          // SQL statement to retrieve rows that have the username column equal to the given username      
          $sql_statement = "SELECT * FROM users WHERE username='".$username."'";
@@ -63,19 +58,10 @@ if(request_is_post() && request_is_same_domain()) {
             // fetch the first row of the results of the query
             $row = $users->fetch_assoc();
 
-	         if($securityAnswer == $row['security_answer']) {
+	         if($birthdayResponse === $row['birthday']) {
 				   // security question answered correctly
-				   create_reset_token($username);
-				   echo "Answer correctly";
 				   
-				   $sql_statement = "SELECT * FROM users WHERE username='".$username."'";
-         
-					// execute query
-					$users = $db->query($sql_statement);
-					$row = $users->fetch_assoc();
-					$token = $row["reset_token"];
-				   $_SESSION["token"] = $token;
-				   echo header("Location: /Comp424Project/public/reset_password.php");
+				   echo header("Location: /Comp424Project/public/security_question_authentication.php");
 				   
 	          } else {
 	            echo header("Location: /Comp424Project/public/incorrect_security_answer.php");
@@ -107,17 +93,18 @@ if(request_is_post() && request_is_same_domain()) {
   <body>
     <div class="well login-well" style="padding-top: 15px;">
 		 <fieldset>
-		 <p>Answer Security Question.</p>
-		 <form role="form" id="security-question-form" class="form-horizontal login-form" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
+		 <p>Birthday Question.</p>
+		 <form role="form" id="birthday-verification-form" class="form-horizontal login-form" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
 			<?php echo csrf_token_tag(); ?>
-			<div class="form-group" id="security-answer-input">
+			<div class="form-group" id="birthday-input">
 				<div class="col-md-12">
-					<label><?php echo sanitize_html($securityQuestion); ?>:</label>
-					<div class="input-group"> 
-						<input type="text" name="security_answer" class="form-control" value="<?php echo sanitize_html($securityAnswer); ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="Please Answer Security Question" data-parsley-required="true" data-parsley-group="block1" data-parsley-ui-enabled="false">
-					</div>
+					 <label>Birthday:</label>
+					 <div class="input-group">
+						  <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+						  <input type="date" id="birthday" name = "birthday" style="margin-top: 15px; margin-left: 15px;" data-parsley-required="true" data-parsley-group="block1" data-container="body" data-toggle="popover" data-trigger="focus" data-content="Please Enter a Birthday" data-parsley-ui-enabled="false">
+					 </div>
 				</div>
-			</div>
+		  </div>
 			<div class="col-md-12">
 				<input type="submit" name="submit" value="Submit" class="btn btn-lg btn-block btn-primary"/>
 				<a class="text-center" style="display: block;" href="../index.php">Back to Login</a>
@@ -126,8 +113,7 @@ if(request_is_post() && request_is_same_domain()) {
 		 </fieldset>
     </div>
     
-        
-            <!-- Bootstrap core JavaScript -->
+                <!-- Bootstrap core JavaScript -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script src="../js/bootstrap.min.js"></script>
         <!-- Form validation from Parsley -->
@@ -139,11 +125,12 @@ if(request_is_post() && request_is_same_domain()) {
                     $('[data-toggle="popover"]').popover();
                 });
 
-                $('#security-question-form').parsley().subscribe('parsley:form:validate', function (formInstance) {
+                $('#birthday-verification-form').parsley().subscribe('parsley:form:validate', function (formInstance) {
 
-                    var securityAnswer = formInstance.isValid('block1', true);
+                    var birthday = formInstance.isValid('block1', true);
 
-                    if (securityAnswer) {
+                    if (birthday) {
+							  console.log("Hello");
                         return;
                     }
 
@@ -156,17 +143,18 @@ if(request_is_post() && request_is_same_domain()) {
 
                     /*
                         Input validation rules:
-                        - Security Answer Required
+                        - birthday Required
                      */
-                    if (!securityAnswer) {
-                        $('#security-answer-input').addClass("has-error");
-                        $('#security_answer').popover('show');
+                    if (!birthday) {
+                        $('#birthday-input').addClass("has-error");
+                        $('#birthday').popover('show');
+                        
                     } else {
-                        $('#security-answer-input').removeClass("has-error");
+                        $('#birthday-input').removeClass("has-error");
                     }
                 });
             });
         </script>
-        
+    
   </body>
 </html>

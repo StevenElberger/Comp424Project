@@ -3,6 +3,10 @@
 <?php
 session_start();
 
+if (!isset($_SESSION["username"])) {
+	echo header("Location: /Comp424Project/public/forgot_password.php");
+}
+
 $username = $_SESSION["username"];
 	// Search our fake database to retrieve the user data
 	// Attempt to connect to the database
