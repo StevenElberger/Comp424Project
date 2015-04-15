@@ -94,6 +94,7 @@ if(request_is_post() && request_is_same_domain()) {
 			</div>
 			<div class="col-md-12">
 				<input type="submit" name="submit" value="Submit" class="btn btn-lg btn-block btn-primary"/>
+				<a class="text-center" style="display: block;" href="../index.php">Back to Login</a>
 			</div>
 		 </form>
 		 </fieldset>

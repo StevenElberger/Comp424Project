@@ -3,19 +3,17 @@
 <?php
 session_start();
 
-// initialize variables to default values
-$username = "";
-$message = "";
-
 if(request_is_post() && request_is_same_domain()) {
 	
   if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
   	$message = "Sorry, request was not valid.";
   } else {
     // CSRF tests passed--form was created by us recently.
-    
-    $_SESSION["username"] = $_POST["username"];
-    echo header("Location: /Comp424Project/public/password_reset_option.php");
+    if ($_POST["auth_method"] == "email") {
+		 echo header("Location: /Comp424Project/public/send_email_authentication.php");
+    } else {
+	    echo header("Location: /Comp424Project/public/security_question_authentication.php");
+    }
   }
 }
 
@@ -27,7 +25,7 @@ if(request_is_post() && request_is_same_domain()) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <title>Forgot Password</title>
+    <title>Forgot Password Option</title>
     <!-- Bootstrap core CSS-->
     <link href="../newcss/bootstrap.css" type="text/css" rel="stylesheet">
     
@@ -36,25 +34,21 @@ if(request_is_post() && request_is_same_domain()) {
     
   </head>
   <body>
-    <?php
-      if($message != "") {
-        echo '<p class="btn-primary" align = "center">' . sanitize_html($message) . '</p>';
-      }
-    ?>
     <div class="well login-well" style="padding-top: 15px;">
 		 <fieldset>
-		 <p>Enter your username to reset your password.</p>
-		 <form action="forgot_password.php" method="POST" accept-charset="utf-8" class="form-horizontal login-form">
+		 <p>Select Authentication Method.</p>
+		 <form action="password_reset_option.php" method="POST" accept-charset="utf-8" class="form-horizontal login-form">
 			<?php echo csrf_token_tag(); ?>
 			<div class="col-md-12">
-				<label>Username:</label>
-				<div class="input-group"> 
-					<input type="text" name="username" class="form-control" value="<?php echo sanitize_html($username); ?>" /><br />
-				</div><br />
+				<div class="radio">
+					<label><input type="radio" name="auth_method" value = "email" checked>Email Authentication</label>
+				</div>
+				<div class="radio">
+					<label><input type="radio" name="auth_method" value = "question">Answer Security Question</label>
+				</div>
 			</div>
 			<div class="col-md-12">
 				<input type="submit" name="submit" value="Submit" class="btn btn-lg btn-block btn-primary"/>
-				<a class="text-center" style="display: block;" href="forgot_username.php">Forgot your username?</a>
 				<a class="text-center" style="display: block;" href="../index.php">Back to Login</a>
 			</div>
 		 </form>

@@ -4,7 +4,16 @@
 session_start();
 
 $message = "";
-$token = $_GET['token'];
+$token = "";
+//$token = $_GET['token'];
+
+if (isset($_SESSION['token'])) {
+	$token = $_SESSION['token'];
+}
+else if (isset($_GET['token'])) {
+	$token = $_GET['token'];
+}
+
 
 // Confirm that the token sent is valid
 $username = find_user_with_token($token);
