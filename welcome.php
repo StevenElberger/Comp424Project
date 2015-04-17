@@ -15,11 +15,11 @@
 
         <?php
             // Grab security functions
-            require_once("/private/initialize.php");
+            require_once("/var/www/html/Comp424Project/private/initialize.php");
             session_start();
             // Make sure the session is still active
             validate_user_before_displaying();
-			$username = $_SESSION["username"];
+		$username = $_SESSION["username"];
 
             // Check if logout button was pressed
             if (isset($_POST['logout'])) {

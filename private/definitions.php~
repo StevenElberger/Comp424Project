@@ -19,7 +19,7 @@
 	define("DB_SERVER", "localhost");
 	define("DB_USER", "424Website");
 	define("DB_PASS", "comp424test");
-	define("DB_NAME", "comp424project");
+	define("DB_NAME", "users");
 
 
 ?>
