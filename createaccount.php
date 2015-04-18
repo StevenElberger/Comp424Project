@@ -151,9 +151,9 @@
 
 		            // Adds a new user account with form data into the physician table of the database
 		            // -- To do: form checking (e.g., username already exists, security, etc.)
-		            $sql = "INSERT INTO users (username, password, first_name, last_name, security_question, security_answer, company, phone, email) 
+		            $sql = "INSERT INTO users (username, password, first_name, last_name, security_question, security_answer, company, phone, email, times_logged_in, last_login) 
 		            VALUES ('".$username."', '".$hash_pass."', '".$first_name."', '".$last_name."', '".$security_question."', '".$security_answer.
-		            "', '".$company."', '".$phone."', '".$email."')";
+		            "', '".$company."', '".$phone."', '".$email."', 0, 0)";
 
 		            if (username_exists($username, $conn)) {
 		                $usernameError = "<div class='alert alert-danger' id='username-exists' role='alert'>";

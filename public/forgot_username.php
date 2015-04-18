@@ -1,4 +1,4 @@
-<?php require_once("../private/initialize.php"); ?>
+<?php require_once("/var/www/html/Comp424Project/private/initialize.php"); ?>
 
 <?php
 session_start();

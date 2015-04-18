@@ -79,6 +79,10 @@
                                 $row = $result->fetch_assoc();
                                 // We know the username matches so check the password against the hash
                                 if (password_verify($password, $row["password"])) {
+				    // grab last login and times logged in
+				    $last_login_sql = "SELECT last_login FROM users WHERE username = '" . $username . "'";
+				    $last_login = $conn->query($last_login_sql);
+				    $_SESSION["last_login"] = $last_login;
                                     // Initialize session data and
                                     // redirect user to the welcome page
                                     $_SESSION["username"] = $username;

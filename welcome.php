@@ -19,14 +19,16 @@
             session_start();
             // Make sure the session is still active
             validate_user_before_displaying();
-		$username = $_SESSION["username"];
+	    $username = $_SESSION["username"];
 
-            // Check if logout button was pressed
-            if (isset($_POST['logout'])) {
-                after_successful_logout();
-                echo header("Location: /Comp424Project/index.php");
-            }
-		?>
+	    $conn = new mysqli(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
+
+	    $last_login_sql = "UPDATE users SET last_login = '" . time() . "' WHERE username = '" . $username . "'";
+	    $last_login = $conn->query($last_login_sql);
+	    $time = $_SESSION["last_login"];
+	    $dt = new DateTime("@$time");
+	    $time = $dt->format("D M j G:i:s T Y");
+	?>
 	</head>
     <body>
         <!-- begin navigation bar -->
@@ -62,11 +64,11 @@
             <!-- Contains the welcome information -->
             <div class="container" id="welcome-container">
 
-                <h1>Welcome, <span id="doctor_id"><?php echo $username; ?></span>!</h1>
+                <h1>Welcome, <span id="username"><?php echo $username; ?></span>!</h1>
 
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        You have logged in X times... yadda yadda.
+                        Your last login was on <?php echo $time; ?>. You have logged in previously <span id="result"></span> times.
                     </div>
                 </div>
 
@@ -82,37 +84,27 @@
         <script type="text/javascript">
             // used for pulling info from database
             function testAJAX() {
-                var xmlhttp;
-                if (window.XMLHttpRequest) {
-                    xmlhttp = new XMLHttpRequest();
-                }
-                xmlhttp.onreadystatechange = function () {
-                    $("#progdiv").fadeIn(400).removeClass('hidden');
-                    if (xmlhttp.readyState == 1) {
-                        $("#progbar").css("width", "25%");
-                    } else if (xmlhttp.readyState == 2) {
-                        $("#progbar").css("width", "50%");
-                    } else if (xmlhttp.readyState == 3) {
-                        $("#progbar").css("width", "75%");
-                    }
-                    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                        $("#progbar").css("width", "100%");
-                        setTimeout(function() {
-                            // display data here
-                        }, 1000);
-                    }
-                };
-                var username = $("#username").html();
-                xmlhttp.open("POST","loginstuff.php",true);
-                // HTTP header required for POST
-                xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-                xmlhttp.send("username=" + username);
-            }
+		$.ajax({
+			url: "update_login.php",
+			type: "POST",
+			success: function (data) {
+				alert(data);
+			},
+			complete: function() {
+				alert("Complete");
+			},
+			error: function (e) {
+				console.log("Error:", e);
+			}
+		});
+	    }
 
             $(document).ready(function(){
 
                 // show the welcome screen
                 $("#welcome-jumbo").fadeIn(800).removeClass('hidden');
+
+		//testAJAX();
                 
             });
         </script>
