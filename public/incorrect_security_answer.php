@@ -17,7 +17,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <title>Forgot Password Option</title>
+    <title>Forgot Password Security Question</title>
     <!-- Bootstrap core CSS-->
     <link href="../newcss/bootstrap.css" type="text/css" rel="stylesheet">
     

@@ -8,6 +8,8 @@ if (!isset($_SESSION["username"])) {
 }
 
 $username = $_SESSION["username"];
+$username = sanitize_sql($username);
+
 	// Search our fake database to retrieve the user data
 	// Attempt to connect to the database
 	$db = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
@@ -44,6 +46,7 @@ $username = $_SESSION["username"];
 	
 	echo '<p class="btn-primary" align = "center">' . sanitize_html($message) . '</p>';
 	echo '<a class="text-center" style="display: block;" href="../index.php">Back to Login</a>';
+	
 ?>
 
 <!DOCTYPE html>

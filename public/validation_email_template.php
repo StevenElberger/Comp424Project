@@ -10,7 +10,7 @@
 		<!-- Custom CSS for Login -->
 		<link href="../newcss/login.css" type="text/css" rel="stylesheet">
 		
-		<title>Password Reset Email</title>
+		<title>Validate Account</title>
 		
 	</head>
 	<body style="color: #555555 background-color: #ffffff">
@@ -18,21 +18,15 @@
 		<h1 class="text-center" style="color: #317eac">Comp 424 Security Site</h1>
 		
 		<p style="color: #3a87ad">
-			There was a request to reset the password for an account associated with this email
+			You can use the link below to validate your account.
 		<br /></p>
-		
-		<p>You can use the link below to reset your password.</p>
 		
 		<p>
 			
-			<a href="[[ip_address]]/Comp424Project/public/reset_password_email.php?token=[[token]]">
-				[[ip_address]]/Comp424Project/public/reset_password.php?token=[[token]]</a>
+			<a href="[[ip_address]]/Comp424Project/public/validate_account.php?token=[[token]]">
+				[[ip_address]]/Comp424Project/public/validate_account.php?token=[[token]]</a>
 		</p>
-
-		<p>
-			If you did not make this request, you do not need to take any action. 
-			Your password cannot be changed without clicking the above link to verify the request.
-		</p>
+		
 		
 		<hr />
   </body>

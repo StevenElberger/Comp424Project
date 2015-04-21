@@ -66,7 +66,6 @@ if(request_is_post() && request_is_same_domain()) {
 	         if($securityAnswer == $row['security_answer']) {
 				   // security question answered correctly
 				   create_reset_token($username);
-				   echo "Answer correctly";
 				   
 				   $sql_statement = "SELECT * FROM users WHERE username='".$username."'";
          

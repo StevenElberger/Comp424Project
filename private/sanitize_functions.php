@@ -32,7 +32,7 @@
    // Sanitize string for SQL output
    function sanitize_sql($string) {
       // Attempt to connect to the database
-      $db = mysqli_connect("DB_SERVER", "DB_USER", "DB_PASS", "DB_NAME");
+      $db = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
       
       // If connection is successful, use mysqli function to sanitize
       // Otherwise use php function to sanitize by adding slashes

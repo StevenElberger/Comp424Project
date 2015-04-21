@@ -17,7 +17,7 @@
     <body>
         <?php
             // Grab security functions
-            require_once("/private/initialize.php");
+            require_once("/var/www/html/Comp424Project/private/initialize.php");
 
             session_start();
 

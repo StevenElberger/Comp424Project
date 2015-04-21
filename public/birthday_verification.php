@@ -9,6 +9,7 @@ if (!isset($_SESSION["username"])) {
 
 // initialize variables to default values
 $username = $_SESSION["username"];
+$username = sanitize_sql($username);
 
 $birthday = "";
 $message = "";

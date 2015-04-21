@@ -1,4 +1,4 @@
-<?php require_once("../private/initialize.php"); ?>
+<?php require_once("/var/www/html/Comp424Project/private/initialize.php"); ?>
 
 <?php
 session_start();
@@ -26,6 +26,8 @@ if(request_is_post() && request_is_same_domain()) {
             die("Database connection failed: " . mysqli_connect_error() .
               " (" . mysqli_connect_errno() . ")");
          }
+         
+         $email = sanitize_sql($email);
    
          // SQL statement to retrieve rows that have the email column equal to the given email      
          $sql_statement = "SELECT * FROM users WHERE email='".$email."'";
@@ -56,7 +58,19 @@ if(request_is_post() && request_is_same_domain()) {
 		} else {
 			$message = "Please enter a email.";
 		}
+		
+		$email = test_input($email);
   }
+}
+
+
+// Removes unwanted and potentially malicious characters
+// from the form data to prevent XSS hacks / exploits
+function test_input($data) {
+	 $data = trim($data);
+	 $data = stripslashes($data);
+	 $data = htmlspecialchars($data);
+	 return $data;
 }
 
 ?>

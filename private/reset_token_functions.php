@@ -238,4 +238,74 @@ function email_username_token($email) {
 	} 
 }
 
+// A function to email a link with a token, that will
+// validate the users account.
+function email_validation_token($username) {
+	
+	// Attempt to connect to the database
+   $db = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
+   if (mysqli_connect_errno()) {
+      die("Database connection failed: " . mysqli_connect_error() .
+         " (" . mysqli_connect_errno() . ")");
+   }
+   
+   // SQL statement to retrieve rows that have the username column equal to the given username      
+    $sql_statement = "SELECT * FROM users WHERE username='".$username."'";
+
+   // execute query
+   $users = $db->query($sql_statement);
+
+   // check if anything was returned by database
+   if ($users->num_rows > 0) {
+
+      // fetch the first row of the results of the query
+      $row = $users->fetch_assoc();
+      
+      $ip_address = $_SERVER['SERVER_ADDR'];
+      
+      $to_name = $row["username"];
+      $to = $row["email"];
+      $subject = "Comp 424 Security Site Validation Email";
+      $body = file_get_contents('public/validation_email_template.php');
+      $body = str_replace("[[token]]", $row["reset_token"], $body);
+      //$body = str_replace("[[ip_address]]", "108.77.79.66", $body);
+      $body = str_replace("[[ip_address]]", $ip_address, $body);
+      
+      $from_name = "Comp 424 Security Site";
+      $from = EMAIL_USERNAME;
+      
+      $mail = new PHPMailer();
+      $mail->Port = 465;
+      $mail->IsSMTP();
+      $mail->Host = "ssl://smtp.mail.yahoo.com";
+      $mail->SMTPSecure = "tls";
+      $mail->SMTPAuth = true;
+      $mail->Username = $from;
+      $mail->Password = EMAIL_PASSWORD;
+      $mail->From = $from;
+      $mail->FromName = $from_name;
+      $mail->AddAddress($to, $to_name);
+      $mail->Subject = $subject;
+      $mail->AltBody = "To view this message, please use an HTML compatible email viewer";
+      $mail->IsHTML(true);
+      $mail->MsgHTML($body);
+      $mail->WordWrap = 70;
+      
+      // Email the user
+      //$result = $mail->Send();
+      
+      // Uncomment For Testing
+      if ($mail->Send()) {
+			//echo "Success";
+		} else {
+			echo $mail->ErrorInfo;
+		}
+
+		// close database connection
+      $db->close();
+	} 
+}
+
+
+
 ?>
