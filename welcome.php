@@ -72,6 +72,7 @@
                 <div class="panel panel-default">
                     <div class="panel-body">
                         Your last login was on <?php echo $time; ?>. You have logged in previously <span id="result"><?php echo $times_logged_in; ?></span> times.
+			Download the confidential file <a href="/Comp424Project/private/company_confidential_file.txt" download>here</a>.
                     </div>
                 </div>
 
