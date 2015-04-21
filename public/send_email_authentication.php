@@ -29,8 +29,9 @@ $username = sanitize_sql($username);
 		// fetch the first row of the results of the query
 		$row = $users->fetch_assoc();
 		$user = $row['username'];
+		$valid = $row['valid'];
 
-		if($user) {
+		if($user && $valid != 0) {
 		   // Username was found; okay to reset
 		   create_reset_token($username);
 		   email_reset_token($username);

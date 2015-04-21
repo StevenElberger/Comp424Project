@@ -77,8 +77,9 @@
                             // If there's a match, check to make sure authentication was successful
                             if ($result->num_rows > 0) {
                                 $row = $result->fetch_assoc();
+                                $valid = $row["valid"];
                                 // We know the username matches so check the password against the hash
-                                if (password_verify($password, $row["password"])) {
+                                if (password_verify($password, $row["password"]) && $valid != 0) {
 				    // grab last login and times logged in
 				    $last_login_sql = "SELECT last_login FROM users WHERE username = '" . $username . "'";
 				    $last_login = $conn->query($last_login_sql);

@@ -52,14 +52,14 @@ if(request_is_post() && request_is_same_domain()) {
          
          // execute query
          $users = $db->query($sql_statement);
-         
       
          // check if anything was returned by database
-         if ($users->num_rows > 0) {
+         if ($users->num_rows > 0 ) {
             // fetch the first row of the results of the query
             $row = $users->fetch_assoc();
+            $valid = $row["valid"];
 
-	         if($birthdayResponse === $row['birthday']) {
+	         if($birthdayResponse === $row['birthday'] && $valid != 0) {
 				   // security question answered correctly
 				   
 				   echo header("Location: /Comp424Project/public/security_question_authentication.php");
@@ -67,6 +67,8 @@ if(request_is_post() && request_is_same_domain()) {
 	          } else {
 	            echo header("Location: /Comp424Project/public/incorrect_security_answer.php");
 	          }
+			 } else {
+				 $error = true;
 			 }
 		} 
 		if ($error === true) {
