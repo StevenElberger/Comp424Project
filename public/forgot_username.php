@@ -40,8 +40,9 @@ if(request_is_post() && request_is_same_domain()) {
             // fetch the first row of the results of the query
             $row = $users->fetch_assoc();
             $user = $row['username'];
+            $valid = $row['valid'];
 
-	         if($user) {
+	         if($user && $valid != 0) {
 				   // Username was found; okay to reset
 				   create_reset_token($user);
 				   email_username_token($email);
