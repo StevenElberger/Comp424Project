@@ -38,7 +38,6 @@ if ($users->num_rows > 0) {
 }
 else {
 	$error = true;
-	$securityQuestion = "What is the name of your first love?";
 }
 
 if(request_is_post() && request_is_same_domain()) {
@@ -67,6 +66,9 @@ if(request_is_post() && request_is_same_domain()) {
 				   // security question answered correctly
 				   create_reset_token($username);
 				   
+				   $log_info = "A User attempted to reset password through security question for username, " . $username . ". Request successful.";
+               log_activity("Password Reset Request", $log_info);
+				   
 				   $sql_statement = "SELECT * FROM users WHERE username='".$username."'";
          
 					// execute query
@@ -77,9 +79,14 @@ if(request_is_post() && request_is_same_domain()) {
 				   echo header("Location: /Comp424Project/public/reset_password.php");
 				   
 	          } else {
+					$log_info = "A User attmepted to reset password through security question for username, " . $username . ". Request failed.";
+               log_activity("Password Reset Request", $log_info);
 	            echo header("Location: /Comp424Project/public/incorrect_security_answer.php");
 	          }
-			 }
+			 } else {
+				$log_info = "A User attmepted to reset password through security question for username, " . $username . ". Request failed, username does not exist.";
+            log_activity("Password Reset Request", $log_info);
+			}
 		} 
 		if ($error === true) {
 			echo header("Location: /Comp424Project/public/incorrect_security_answer.php");

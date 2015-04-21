@@ -35,10 +35,20 @@ $username = sanitize_sql($username);
 		   // Username was found; okay to reset
 		   create_reset_token($username);
 		   email_reset_token($username);
+		   
+		   $log_info = "A User requested to reset password through email for username, " . $username . ". Request successful.";
+         log_activity("Password Reset Request", $log_info);
+		   
 		 } else {
-			// Username was not found; don't do anything
+			// Username account not valid
+			$log_info = "A User requested to reset password through email for username, " . $username . ". Request failed, account not valid.";
+         log_activity("Password Reset Request", $log_info);
 		 }
-	 }
+	 } else {
+			// Username was not found; don't do anything
+			$log_info = "A User requested to reset password through email for username, " . $username . ". Request failed, username does not exist.";
+         log_activity("Password Reset Request", $log_info);
+	}
 
 	// Message returned is the same whether the user 
 	// was found or not, so that we don't reveal which 

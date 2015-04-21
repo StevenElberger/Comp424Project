@@ -99,9 +99,13 @@
                                     $_SESSION["username"] = $username;
                                     clear_failed_login($username);
                                     after_successful_login();
+                                    $log_info = "A User attempted to login with username, " . $username . " and was successful";
+                                    log_activity("Login", $log_info);
                                     echo header("Location: /Comp424Project/welcome.php");
                                 } else {
                                     record_failed_login($username);
+                                    $log_info = "A User attempted to login with username, " .$username . " has attempted to login to the site and failed";
+                                    log_activity("Login", $log_info);
                                     // Don't let the user know which piece of data was incorrect
                                     $bad_authentication = "<div class='alert alert-danger login-error' role='alert'>";
                                     $bad_authentication .= "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>";
@@ -111,6 +115,8 @@
                                 }
                             } else {
                                 record_failed_login($username);
+                                $log_info = "A User attempted to login with username, " . $username . ", and failed, username does not exists";
+                                log_activity("Login", $log_info);
                                 $bad_authentication = "<div class='alert alert-danger' role='alert'>";
                                 $bad_authentication .= "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>";
                                 $bad_authentication .= "<span class='sr-only'>Error:</span>";
@@ -122,6 +128,8 @@
                     }
                 } else {
                     // no such username
+                    $log_info = "A User attempted to login with username, " . $username . ", and failed, username does not exists";
+                    log_activity("Login", $log_info);
                     $bad_authentication = "<div class='alert alert-danger' role='alert'>";
                     $bad_authentication .= "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>";
                     $bad_authentication .= "<span class='sr-only'>Error:</span>";

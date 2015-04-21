@@ -46,10 +46,18 @@ if(request_is_post() && request_is_same_domain()) {
 				   // Username was found; okay to reset
 				   create_reset_token($user);
 				   email_username_token($email);
+				   $log_info = "A User requested to retrieve the username, " . $user . ". Request successful and username emailed.";
+               log_activity("Username Request", $log_info);
 	          } else {
-	            // Username was not found; don't do anything
+	            // Username account not valid; don't do anything
+	            $log_info = "A User requested to retrieve the username, " . $user . ". Request not completed, account not valid.";
+               log_activity("Username Request", $log_info);
 	          }
-			 }
+			 } else {
+	          // Username was not found; don't do anything
+	          $log_info = "A User requested to retrieve a username that does not exist. The email used is " . $email . ".";
+             log_activity("Username Request", $log_info);
+			}
 	
 			// Message returned is the same whether the user 
 			// was found or not, so that we don't reveal which 

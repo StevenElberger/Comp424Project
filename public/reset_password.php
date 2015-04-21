@@ -53,6 +53,10 @@ if(request_is_post() && request_is_same_domain()) {
          if ($users->num_rows > 0) {
 			   $sql_statement = "UPDATE users SET password='" .$hashed_password. "' WHERE username ='" .$username."'";
 			   $db->query($sql_statement);
+			   
+			   $log_info = "A User has successfully reset the password for username, " . $username . ".";
+            log_activity("Password Reset Successful", $log_info);
+			   
 			   // fetch the first row of the results of the query
             $row = $users->fetch_assoc();
 			   delete_reset_token($row['username']);
@@ -108,6 +112,7 @@ if(request_is_post() && request_is_same_domain()) {
 					</div>
 					<div class="col-md-12">
 						<input type="submit" name="submit" value="Set password" class="btn btn-lg btn-block btn-primary" />
+						<a class="text-center" style="display: block;" href="../index.php">Go to Login</a>
 					</div>
 				</form>
 			</fieldset>
