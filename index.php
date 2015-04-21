@@ -83,6 +83,16 @@
 				    $last_login_sql = "SELECT last_login FROM users WHERE username = '" . $username . "'";
 				    $last_login = $conn->query($last_login_sql);
 				    $_SESSION["last_login"] = $last_login;
+				    // -- TEST CODE --
+				    $times_logged_in_sql = "SELECT times_logged_in FROM users WHERE username = '" . $username . "'";
+				    $times_logged_in = $conn->query($times_logged_in_sql);
+				    if ($times_logged_in->num_rows > 0) {
+					$row = $times_logged_in->fetch_assoc();
+					$_SESSION["times_logged_in"] = $row["times_logged_in"];
+					$times_logged_in_increment = $row["times_logged_in"] + 1;
+					$update_times_logged_in_sql = "UPDATE users SET times_logged_in = '" . $times_logged_in_increment . "'  WHERE username = '" . $username . "'";
+					$update_times_logged_in = $conn->query($update_times_logged_in_sql);
+				    }
                                     // Initialize session data and
                                     // redirect user to the welcome page
                                     $_SESSION["username"] = $username;
