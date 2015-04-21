@@ -243,6 +243,10 @@
                             </div>
                         </div>
                     </div>
+		    <!-- begin progress bar -->
+		    <div class="progress progress-striped active" id="strength-bar-div">
+			<div class="progress-bar" id="strength-bar" style="width: 0%"></div>
+		    </div>
                     <div class="form-group" id="confirm-input">
                         <div class="col-md-12">
                             <label>Confirm Password:</label>
@@ -309,14 +313,42 @@
         <!-- Form validation from Parsley -->
         <script src="js/parsley.min.js"></script>
         <script type="text/javascript">
+	function passwordStrength() {
+		var strength = ["", "Weak", "Okay", "Good", "Strong", "Very strong"];
+		var score = 0;
+		var password = $("#password").val();
+
+		// increase score for pass length of at least 8
+		if (password.length > 0) score++;
+
+		// increase score if pass contains both a lowercase and uppercase letter
+		if ( (password.match(/[a-z]/)) && (password.match(/[A-Z]/)) ) score++;
+
+		// increase score if pass contains a number
+		if (password.match(/\d+/)) score++;
+
+		// increase score if pass contains at least 1 symbol
+		if (password.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/)) score++;
+
+		// increase score if pass length of at least 12
+		if (password.length > 12) score++;
+
+		// provide feedback to user
+		var percent = "" + score*20 + "%";
+		$("#strength-bar").css("width", percent).html(strength[score]);
+	}
 
         $(document).ready(function () {
-            
-			// activate all popovers
+
+	   $("#password").keyup(function() {
+		passwordStrength();
+	   });
+
+	    // activate all popovers
             $(function () {
                 $('[data-toggle="popover"]').popover();
             });
-				
+
                 $('#account-form').parsley().subscribe('parsley:form:validate', function (formInstance) {
 
                     var firstName = formInstance.isValid('block1', true);
