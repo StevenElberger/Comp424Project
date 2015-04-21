@@ -28,6 +28,9 @@
 	    $time = $_SESSION["last_login"];
 	    $dt = new DateTime("@$time");
 	    $time = $dt->format("D M j G:i:s T Y");
+
+	    // get times logged in
+	    $times_logged_in = $_SESSION["times_logged_in"];
 	?>
 	</head>
     <body>
@@ -68,7 +71,7 @@
 
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        Your last login was on <?php echo $time; ?>. You have logged in previously <span id="result"></span> times.
+                        Your last login was on <?php echo $time; ?>. You have logged in previously <span id="result"><?php echo $times_logged_in; ?></span> times.
                     </div>
                 </div>
 
