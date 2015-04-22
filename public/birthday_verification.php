@@ -1,8 +1,12 @@
 <?php require_once("../private/initialize.php"); ?>
 
 <?php
+
+// Make sure session has started
 session_start();
 
+// If the username is not set in the Session Variables, do not continue.
+// Redirect to the start of reset password process.
 if (!isset($_SESSION["username"])) {
 	echo header("Location: /Comp424Project/public/forgot_password.php");
 }
@@ -39,14 +43,21 @@ else {
 	$error = true;
 }
 
+// Only process request if the request is from the same domain as the 
+// machine that generated the form from, the request is a post, and if the form is valid
 if(request_is_post() && request_is_same_domain()) {
 	
   if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
+	  
+	// if not valid, notify the user and log information about event
   	$message = "Sorry, request was not valid.";
   	$log_info = "A User attempted to submit an invalid form in Birthday Verification. IP Address: " . $_SERVER['REMOTE_ADDR'];
    log_error("Form Forgery", $log_info);
+   
   } else {
     // CSRF tests passed--form was created by us recently.
+    
+    // Retrieve response
     $birthdayResponse = $_POST["birthday"];
     
 		if(!empty($birthdayResponse)) {
@@ -59,29 +70,44 @@ if(request_is_post() && request_is_same_domain()) {
       
          // check if anything was returned by database
          if ($users->num_rows > 0 ) {
+				
             // fetch the first row of the results of the query
             $row = $users->fetch_assoc();
             $valid = $row["valid"];
 
+				// Check whether the response was correct or not
 	         if($birthdayResponse === $row['birthday'] && $valid != 0) {
-				   // security question answered correctly
 				   
+				   // Correct response, send the user to security question form
 				   echo header("Location: /Comp424Project/public/security_question_authentication.php");
 				   
 	          } else {
+					
+					// Incorrect response, send the user to feedback page
 	            echo header("Location: /Comp424Project/public/incorrect_security_answer.php");
+	            
 	          }
 			 } else {
+				 
+				 // The user does not exist in the database, set that there was an error
 				 $error = true;
+				 
 			 }
 		} 
 		if ($error === true) {
+			
+			// If there was an error, either the birthday was incorrect or the username does not exist
+			// Send the user to feedback page for incorrect input
 			echo header("Location: /Comp424Project/public/incorrect_security_answer.php");
+			
 		}
   }
 } else {
+	
+	// Request Forgery was attempted, log this activity
 	$log_info = "A User attempted to give a post request from a different domain in Birthday Verification. IP Address: " . $_SERVER['REMOTE_ADDR'];
    log_error("Request Forgery", $log_info);
+   
 }
 
 ?>
@@ -135,12 +161,14 @@ if(request_is_post() && request_is_same_domain()) {
                     $('[data-toggle="popover"]').popover();
                 });
 
+					 // Check form for valid input
                 $('#birthday-verification-form').parsley().subscribe('parsley:form:validate', function (formInstance) {
 
+						  // Check the validity of form input for birthday
                     var birthday = formInstance.isValid('block1', true);
 
+						  // If form data correct, then no further action required
                     if (birthday) {
-							  console.log("Hello");
                         return;
                     }
 

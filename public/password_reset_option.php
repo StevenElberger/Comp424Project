@@ -3,27 +3,44 @@
 <?php
 session_start();
 
+// If the username is not set in the Session, redirect them to the 
+// start of the reset password process
 if (!isset($_SESSION["username"])) {
 	echo header("Location: /Comp424Project/public/forgot_password.php");
 }
 
+// Only process request if the request is from the same domain as the 
+// machine that generated the form from, the request is a post, and if the form is valid
 if(request_is_post() && request_is_same_domain()) {
 	
   if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
+	 
+	// Form not valid, notify the user and log this activity
   	$message = "Sorry, request was not valid.";
   	$log_info = "A User attempted to submit an invalid form in Reset Password Options. IP Address: " . $_SERVER['REMOTE_ADDR'];
    log_error("Form Forgery", $log_info);
+   
   } else {
+	  
     // CSRF tests passed--form was created by us recently.
     if ($_POST["auth_method"] == "email") {
+		 
+		 // If email option selected, redirect to email authentication process
 		 echo header("Location: /Comp424Project/public/send_email_authentication.php");
+		 
     } else {
+		 
+		 // Otherwise security question option selected, redirect to security question process
 	    echo header("Location: /Comp424Project/public/birthday_verification.php");
+	    
     }
   }
 } else {
+	
+	// Request Forgery, log this activity
 	$log_info = "A User attempted to give a post request from a different domain in Reset Password Options. IP Address: " . $_SERVER['REMOTE_ADDR'];
    log_error("Request Forgery", $log_info);
+   
 }
 
 ?>

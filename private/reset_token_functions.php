@@ -146,6 +146,7 @@ function email_reset_token($username) {
       $from_name = "Comp 424 Security Site";
       $from = EMAIL_USERNAME;
       
+      // Set mailer options and content
       $mail = new PHPMailer();
       $mail->Port = 465;
       $mail->IsSMTP();
@@ -163,14 +164,12 @@ function email_reset_token($username) {
       $mail->MsgHTML($body);
       $mail->WordWrap = 70;
       
-      // Email the user
-      //$result = $mail->Send();
-      
       // Uncomment For Testing
       if ($mail->Send()) {
 			//echo "Success";
 		} else {
-			//echo $mail->ErrorInfo;
+			$log_info = "Email failed to be sent for Reset Password Request";
+         log_error("Emailer Failed", $log_info);
 		}
 
 		// close database connection
@@ -214,6 +213,7 @@ function email_username_token($email) {
       $from_name = "Comp 424 Security Site";
       $from = EMAIL_USERNAME;
       
+      // Set mailer options and content
       $mail = new PHPMailer();
       $mail->Port = 465;
       $mail->IsSMTP();
@@ -231,14 +231,13 @@ function email_username_token($email) {
       $mail->MsgHTML($body);
       $mail->WordWrap = 70;
       
-      // Email the user
-      //$result = $mail->Send();
-      
       // Uncomment For Testing
       if ($mail->Send()) {
 			//echo "Success";
 		} else {
-			//echo $mail->ErrorInfo;
+			
+			$log_info = "Email failed to be sent for Retrieval of Username";
+         log_error("Emailer Failed", $log_info);
 		}
 
 		// close database connection
@@ -284,6 +283,7 @@ function email_validation_token($username) {
       $from_name = "Comp 424 Security Site";
       $from = EMAIL_USERNAME;
       
+      // Set mailer options and content
       $mail = new PHPMailer();
       $mail->Port = 465;
       $mail->IsSMTP();
@@ -301,14 +301,12 @@ function email_validation_token($username) {
       $mail->MsgHTML($body);
       $mail->WordWrap = 70;
       
-      // Email the user
-      //$result = $mail->Send();
-      
       // Uncomment For Testing
       if ($mail->Send()) {
 			//echo "Success";
 		} else {
-			echo $mail->ErrorInfo;
+			$log_info = "Email failed to be sent for Validation of Account";
+         log_error("Emailer Failed", $log_info);
 		}
 
 		// close database connection

@@ -7,19 +7,27 @@ session_start();
 $username = "";
 $message = "";
 
+// Only process request if the request is from the same domain as the 
+// machine that generated the form from, the request is a post, and if the form is valid
 if(request_is_post() && request_is_same_domain()) {
 	
   if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
-  	$message = "Sorry, request was not valid.";
-  	$log_info = "A User attempted to submit an invalid form in Forgot Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
-   log_error("Form Forgery", $log_info);
+	  
+	  // form is not valid, notify the user and log the information
+  	  $message = "Sorry, request was not valid.";
+  	  $log_info = "A User attempted to submit an invalid form in Forgot Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
+     log_error("Form Forgery", $log_info);
+     
   } else {
     // CSRF tests passed--form was created by us recently.
     
+    // Store the username and move forward on the reset password process
     $_SESSION["username"] = $_POST["username"];
     echo header("Location: /Comp424Project/public/password_reset_option.php");
   }
 } else {
+	
+	// Request Forgery, log acivity
 	$log_info = "A User attempted to give a post request from a different domain in Forgot Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
    log_error("Request Forgery", $log_info);
 }
@@ -42,6 +50,7 @@ if(request_is_post() && request_is_same_domain()) {
   </head>
   <body>
     <?php
+		// Message to notify the user of important information
       if($message != "") {
         echo '<p class="btn-primary" align = "center">' . sanitize_html($message) . '</p>';
       }
@@ -56,7 +65,7 @@ if(request_is_post() && request_is_same_domain()) {
 					 <label>Username:</label>
 					 <div class="input-group">
 						  <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-						  <input type="text" name="username" id="username" class="form-control" value="<?php echo $username; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="Please Enter a Username" data-parsley-required="true" data-parsley-type="alphanum" data-parsley-length="[8, 16]" data-parsley-group="block1" data-parsley-ui-enabled="false">
+						  <input type="text" name="username" maxlength="32" id="username" class="form-control" value="<?php echo $username; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="Please Enter a Username" data-parsley-required="true" data-parsley-type="alphanum" data-parsley-length="[8, 16]" data-parsley-group="block1" data-parsley-ui-enabled="false">
 					 </div>
 				</div>
 		  </div>
@@ -81,10 +90,13 @@ if(request_is_post() && request_is_same_domain()) {
                     $('[data-toggle="popover"]').popover();
                 });
 
+					 // Check the validity of thr form that is being submitted
                 $('#reset-password-form').parsley().subscribe('parsley:form:validate', function (formInstance) {
-
+						  
+						  // Check for valid input for all entered information
                     var username = formInstance.isValid('block1', true);
 
+						  // If input is valid, not more actions required
                     if (username) {
                         return;
                     }

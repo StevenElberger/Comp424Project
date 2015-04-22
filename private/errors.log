@@ -1,16 +1,1 @@
 
-Request Forgery: 2015/04/22 12:03:52.415017 - A User attempted to give a post request from a different domain in Forgot Username. IP Address: 192.168.56.1
-Request Forgery: 2015/04/22 12:03:55.32350 - A User attempted to give a post request from a different domain in Login. IP Address: 192.168.56.1
-Request Forgery: 2015/04/22 12:03:57.208383 - A User attempted to give a post request from a different domain in Forgot Password. IP Address: 192.168.56.1
-Request Forgery: 2015/04/22 12:04:01.556083 - A User attempted to give a post request from a different domain in Reset Password Options. IP Address: 192.168.56.1
-Request Forgery: 2015/04/22 12:04:04.635116 - A User attempted to give a post request from a different domain in Birthday Verification. IP Address: 192.168.56.1
-Request Forgery: 2015/04/22 12:04:09.426618 - A User attempted to give a post request from a different domain in Security Question Authentication. IP Address: 192.168.56.1
-Request Forgery: 2015/04/22 12:04:13.466396 - A User attempted to give a post request from a different domain in Login. IP Address: 192.168.56.1
-Request Forgery: 2015/04/22 12:04:19.377055 - A User attempted to give a post request from a different domain in Create Account. IP Address: 192.168.56.1
-Request Forgery: 2015/04/22 12:04:24.705146 - A User attempted to give a post request from a different domain in Login. IP Address: 192.168.56.1
-Request Forgery: 2015/04/22 12:08:34.848277 - A User attempted to give a post request from a different domain in Forgot Password. IP Address: 192.168.56.1
-Request Forgery: 2015/04/22 12:08:52.935228 - A User attempted to give a post request from a different domain in Reset Password Options. IP Address: 192.168.56.1
-Request Forgery: 2015/04/22 12:08:57.282251 - A User attempted to give a post request from a different domain in Birthday Verification. IP Address: 192.168.56.1
-Request Forgery: 2015/04/22 12:09:01.617938 - A User attempted to give a post request from a different domain in Security Question Authentication. IP Address: 192.168.56.1
-Request Forgery: 2015/04/22 12:09:11.168705 - A User attempted to give a post request from a different domain in Reset Password. IP Address: 192.168.56.1
-Request Forgery: 2015/04/22 12:09:25.65170 - A User attempted to give a post request from a different domain in Login. IP Address: 192.168.56.1

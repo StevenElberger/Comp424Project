@@ -7,76 +7,90 @@ session_start();
 $email = "";
 $message = "";
 
+// Only process request if the request is from the same domain as the 
+// machine that generated the form from, the request is a post, and if the form is valid
 if(request_is_post() && request_is_same_domain()) {
 	
   if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
+	
+	// Form not valid, notify the user and log this activity
   	$message = "Sorry, request was not valid.";
   	$log_info = "A User attempted to submit an invalid form in Forgot Username. IP Address: " . $_SERVER['REMOTE_ADDR'];
    log_error("Form Forgery", $log_info);
+   
   } else {
+	  
     // CSRF tests passed--form was created by us recently.
 
 	// retrieve the values submitted via the form
     $email = $_POST['email'];
-    
-		if(!empty($email)) {
-			
-			// Search our fake database to retrieve the user data
-			// Attempt to connect to the database
-         $db = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
-         if (mysqli_connect_errno()) {
-            die("Database connection failed: " . mysqli_connect_error() .
-              " (" . mysqli_connect_errno() . ")");
-            $log_info = "Connection to DB Failed in Forgot Username";
-            log_error("DB Connection Error", $log_info);
-         }
-         
-         $email = sanitize_sql($email);
-   
-         // SQL statement to retrieve rows that have the email column equal to the given email      
-         $sql_statement = "SELECT * FROM users WHERE email='".$email."'";
-         
-         // execute query
-         $users = $db->query($sql_statement);
-      
-         // check if anything was returned by database
-         if ($users->num_rows > 0) {
-            // fetch the first row of the results of the query
-            $row = $users->fetch_assoc();
-            $user = $row['username'];
-            $valid = $row['valid'];
 
-	         if($user && $valid != 0) {
-				   // Username was found; okay to reset
-				   create_reset_token($user);
-				   email_username_token($email);
-				   $log_info = "A User requested to retrieve the username, " . $user . ". Request successful and username emailed.";
-               log_activity("Username Request", $log_info);
-	          } else {
-	            // Username account not valid; don't do anything
-	            $log_info = "A User requested to retrieve the username, " . $user . ". Request not completed, account not valid.";
-               log_activity("Username Request", $log_info);
-	          }
-			 } else {
-	          // Username was not found; don't do anything
-	          $log_info = "A User requested to retrieve a username that does not exist. The email used is " . $email . ".";
-             log_activity("Username Request", $log_info);
-			}
+			
+	// Search our database to retrieve the user data
+	// Attempt to connect to the database
+	$db = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
+	if (mysqli_connect_errno()) {
+		die("Database connection failed: " . mysqli_connect_error() .
+		  " (" . mysqli_connect_errno() . ")");
+		$log_info = "Connection to DB Failed in Forgot Username";
+		log_error("DB Connection Error", $log_info);
+	}
 	
-			// Message returned is the same whether the user 
-			// was found or not, so that we don't reveal which 
-			// usernames exist and which do not.
-			$message = "The username associated with this email account has been emailed.";
+	// Clean input for use in sql statments
+	$email = sanitize_sql($email);
+
+	// SQL statement to retrieve rows that have the email column equal to the given email      
+	$sql_statement = "SELECT * FROM users WHERE email='".$email."'";
+	
+	// execute query
+	$users = $db->query($sql_statement);
+
+	// check if anything was returned by database
+	if ($users->num_rows > 0) {
 		
-		} else {
-			$message = "Please enter a email.";
-		}
+		// fetch the first row of the results of the query
+		$row = $users->fetch_assoc();
+		$user = $row['username'];
+		$valid = $row['valid'];
+
+		if($user && $valid != 0) {
+			
+		   // Username was found; okay to reset
+		   create_reset_token($user);
+		   email_username_token($email);
+		   
+		   // Log activity that request was done successfully
+		   $log_info = "A User requested to retrieve the username, " . $user . ". Request successful and username emailed.";
+			log_activity("Username Request", $log_info);
+			
+		 } else {
+			 
+			// Username account not valid; log failed request activity
+			$log_info = "A User requested to retrieve the username, " . $user . ". Request not completed, account not valid.";
+			log_activity("Username Request", $log_info);
+			
+		 }
+	 } else {
+		 
+		 // Username was not found; log failed request activity
+		 $log_info = "A User requested to retrieve a username that does not exist. The email used is " . $email . ".";
+		 log_activity("Username Request", $log_info);
+		 
+	}
+
+	// Message returned is the same whether the user 
+	// was found or not, so that we don't reveal which 
+	// usernames exist and which do not.
+	$message = "The username associated with this email account has been emailed.";
 		
 		$email = test_input($email);
   }
 } else {
+	
+	// Request forgery, log this activity
 	$log_info = "A User attempted to give a post request from a different domain in Forgot Username. IP Address: " . $_SERVER['REMOTE_ADDR'];
    log_error("Request Forgery", $log_info);
+   
 }
 
 
@@ -121,7 +135,7 @@ function test_input($data) {
 					 <label>Email:</label><label class="control-label" id="email-control"></label>
 					 <div class="input-group">
 						  <span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></span>
-						  <input type="text" id="email" name="email" class="form-control" value="<?php echo $email; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="must be valid email address" data-parsley-required="true" data-parsley-type="email" data-parsley-length="[8, 32]" data-parsley-group="block1" data-parsley-ui-enabled="false">
+						  <input type="text" id="email" name="email" maxlength="32" class="form-control" value="<?php echo $email; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="must be valid email address" data-parsley-required="true" data-parsley-type="email" data-parsley-length="[8, 32]" data-parsley-group="block1" data-parsley-ui-enabled="false">
 					 </div>
 				</div>
 		  </div>
@@ -145,10 +159,12 @@ function test_input($data) {
                     $('[data-toggle="popover"]').popover();
                 });
 
+					// Check for Form Validity
                 $('#reset-password-form').parsley().subscribe('parsley:form:validate', function (formInstance) {
 
                     var email = formInstance.isValid('block1', true);
 
+						  // If email is valid, no more actions required
                     if (email) {
                         return;
                     }
