@@ -26,6 +26,8 @@
       if (mysqli_connect_errno()) {
          die("Database connection failed: " . mysqli_connect_error() .
             " (" . mysqli_connect_errno() . ")");
+         $log_info = "Connection to DB Failed for Throttle";
+         log_error("DB Connection Error", $log_info);
       }
 
       // SQL statement to retrieve rows that have the username column equal to the given username      
@@ -71,6 +73,8 @@
       if (mysqli_connect_errno()) {
          die("Database connection failed: " . mysqli_connect_error() .
             " (" . mysqli_connect_errno() . ")");
+         $log_info = "Connection to DB Failed for Throttle";
+         log_error("DB Connection Error", $log_info);
       }
 
       // SQL statement to select all the rows that have the username equal to the given username
@@ -119,6 +123,8 @@
       if (mysqli_connect_errno()) {
          die("Database connection failed: " . mysqli_connect_error() .
             " (" . mysqli_connect_errno() . ")");
+         $log_info = "Connection to DB Failed for Throttle";
+         log_error("DB Connection Error", $log_info);
       }
 
       // SQL command to select all usernames with the given username

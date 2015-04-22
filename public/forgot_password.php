@@ -11,12 +11,17 @@ if(request_is_post() && request_is_same_domain()) {
 	
   if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
   	$message = "Sorry, request was not valid.";
+  	$log_info = "A User attempted to submit an invalid form in Forgot Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
+   log_error("Form Forgery", $log_info);
   } else {
     // CSRF tests passed--form was created by us recently.
     
     $_SESSION["username"] = $_POST["username"];
     echo header("Location: /Comp424Project/public/password_reset_option.php");
   }
+} else {
+	$log_info = "A User attempted to give a post request from a different domain in Forgot Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
+   log_error("Request Forgery", $log_info);
 }
 
 ?>

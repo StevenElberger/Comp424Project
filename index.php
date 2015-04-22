@@ -29,10 +29,9 @@
         // Security checks
         if(request_is_post() && request_is_same_domain()) {
             $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'];
-            if(!csrf_token_is_valid()) {
-                $message = "Sorry, request was not valid. 1 ";
-            } else if (!csrf_token_is_recent()) {
-                $message = "Sorry, request was not valid. 2 ";
+            if(!csrf_token_is_valid() && !csrf_token_is_recent()) {
+                $log_info = "A User attempted to submit an invalid form in Login. IP Address: " . $_SERVER['REMOTE_ADDR'];
+                log_error("Form Forgery", $log_info);
             } else {
                 // CSRF tests passed--form was created by us recently.
                 if (empty($_POST["username"])) {
@@ -45,7 +44,16 @@
                 } else {
                     $password = test_input($_POST["password"]);
                 }
+                
                 $conn = new mysqli(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
+                
+                // Check connection
+		            if ($conn->connect_error) {
+		                die("Connection failed: " . $conn->connect_error);
+		                $log_info = "Connection to DB Failed in Login";
+                      log_error("DB Connection Error", $log_info);
+		            }
+                
                 // check to make sure username actually exists
                 if (username_exists($username, $conn)) {
                     // then check if the user is throttled
@@ -60,6 +68,10 @@
                         $bad_authentication .= "<span>Too many failed logins.</span>";
                         $bad_authentication .= "<span>You must wait {$throttle_delay} minutes before you can attempt another login.</span>";
                         $bad_authentication .= "</div>";
+                        
+                        $log_info = "A User attempted many times to login using username, " . $username . ", and failed. IP Address: " . $_SERVER['REMOTE_ADDR'];
+                        log_error("Failed Login", $log_info);
+                        
                     } else {
                         // not throttled - make connection to db
                         // and check the credentials
@@ -137,7 +149,10 @@
                     $bad_authentication .= "</div>";
                 }
             }
-        }
+        } else {
+			  $log_info = "A User attempted to give a post request from a different domain in Login. IP Address: " . $_SERVER['REMOTE_ADDR'];
+           log_error("Request Forgery", $log_info);
+		  }
         // Removes unwanted and potentially malicious characters
         // from the form data to prevent XSS hacks / exploits
         function test_input($data) {

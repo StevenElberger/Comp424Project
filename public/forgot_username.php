@@ -11,6 +11,8 @@ if(request_is_post() && request_is_same_domain()) {
 	
   if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
   	$message = "Sorry, request was not valid.";
+  	$log_info = "A User attempted to submit an invalid form in Forgot Username. IP Address: " . $_SERVER['REMOTE_ADDR'];
+   log_error("Form Forgery", $log_info);
   } else {
     // CSRF tests passed--form was created by us recently.
 
@@ -25,6 +27,8 @@ if(request_is_post() && request_is_same_domain()) {
          if (mysqli_connect_errno()) {
             die("Database connection failed: " . mysqli_connect_error() .
               " (" . mysqli_connect_errno() . ")");
+            $log_info = "Connection to DB Failed in Forgot Username";
+            log_error("DB Connection Error", $log_info);
          }
          
          $email = sanitize_sql($email);
@@ -70,6 +74,9 @@ if(request_is_post() && request_is_same_domain()) {
 		
 		$email = test_input($email);
   }
+} else {
+	$log_info = "A User attempted to give a post request from a different domain in Forgot Username. IP Address: " . $_SERVER['REMOTE_ADDR'];
+   log_error("Request Forgery", $log_info);
 }
 
 

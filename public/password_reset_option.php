@@ -11,6 +11,8 @@ if(request_is_post() && request_is_same_domain()) {
 	
   if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
   	$message = "Sorry, request was not valid.";
+  	$log_info = "A User attempted to submit an invalid form in Reset Password Options. IP Address: " . $_SERVER['REMOTE_ADDR'];
+   log_error("Form Forgery", $log_info);
   } else {
     // CSRF tests passed--form was created by us recently.
     if ($_POST["auth_method"] == "email") {
@@ -19,6 +21,9 @@ if(request_is_post() && request_is_same_domain()) {
 	    echo header("Location: /Comp424Project/public/birthday_verification.php");
     }
   }
+} else {
+	$log_info = "A User attempted to give a post request from a different domain in Reset Password Options. IP Address: " . $_SERVER['REMOTE_ADDR'];
+   log_error("Request Forgery", $log_info);
 }
 
 ?>

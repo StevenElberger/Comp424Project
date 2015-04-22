@@ -28,6 +28,8 @@ function set_user_reset_token($username, $token_value) {
    if (mysqli_connect_errno()) {
       die("Database connection failed: " . mysqli_connect_error() .
          " (" . mysqli_connect_errno() . ")");
+      $log_info = "Connection to DB Failed for Reset Token";
+      log_error("DB Connection Error", $log_info);
    }
    
    // SQL statement to retrieve rows that have the username column equal to the given username      
@@ -81,6 +83,8 @@ function find_user_with_token($token) {
       if (mysqli_connect_errno()) {
          die("Database connection failed: " . mysqli_connect_error() .
            " (" . mysqli_connect_errno() . ")");
+         $log_info = "Connection to DB Failed for Reset Token";
+         log_error("DB Connection Error", $log_info);
       }
    
       // SQL statement to retrieve rows that have the username column equal to the given username      
@@ -113,6 +117,8 @@ function email_reset_token($username) {
    if (mysqli_connect_errno()) {
       die("Database connection failed: " . mysqli_connect_error() .
          " (" . mysqli_connect_errno() . ")");
+      $log_info = "Connection to DB Failed for Reset Token";
+      log_error("DB Connection Error", $log_info);
    }
    
    // SQL statement to retrieve rows that have the username column equal to the given username      
@@ -181,6 +187,8 @@ function email_username_token($email) {
    if (mysqli_connect_errno()) {
       die("Database connection failed: " . mysqli_connect_error() .
          " (" . mysqli_connect_errno() . ")");
+      $log_info = "Connection to DB Failed for Reset Token";
+      log_error("DB Connection Error", $log_info);
    }
    
    // SQL statement to retrieve rows that have the username column equal to the given username      
@@ -247,6 +255,8 @@ function email_validation_token($username) {
    if (mysqli_connect_errno()) {
       die("Database connection failed: " . mysqli_connect_error() .
          " (" . mysqli_connect_errno() . ")");
+      $log_info = "Connection to DB Failed for Reset Token";
+      log_error("DB Connection Error", $log_info);
    }
    
    // SQL statement to retrieve rows that have the username column equal to the given username      

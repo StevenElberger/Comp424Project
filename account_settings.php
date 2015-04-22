@@ -75,8 +75,14 @@
                 $conn->close();
               }
 
-              // Only accept POST Requests
-            else if ($_SERVER["REQUEST_METHOD"] == "POST") {
+             // Only process POST requests, not GET
+           else if(request_is_post() && request_is_same_domain()) {
+	
+			  if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
+			  	$message = "Sorry, request was not valid.";
+			  	$log_info = "A User attempted to submit an invalid form in Create Account. IP Address: " . $_SERVER['REMOTE_ADDR'];
+			   log_error("Form Forgery", $log_info);
+			  } else {
 
                 $firstLoad = false;
                 // Check that the required fields have been set
@@ -109,7 +115,6 @@
                 } else {
                     $phone = test_input($_POST["phone"]);
                 }
-            }
 
             // As long as all variables were initialized, the data is good to go
             if (($first_name !== "") && ($last_name !== "") && ($company !== "") && ($phone !== "") && !empty($_POST["update"])) {
@@ -145,6 +150,11 @@
                     $requiredFields = "The following fields are required: ";
                 }
             }
+			}
+		} else {
+			$log_info = "A User attempted to give a post request from a different domain. IP Address: " . $_SERVER['REMOTE_ADDR'];
+         log_error("Request Forgery", $log_info);
+		}
 
             // Removes unwanted and potentially malicious characters
             // from the form data to prevent XSS hacks / exploits
