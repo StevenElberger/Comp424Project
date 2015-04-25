@@ -1,1 +1,6 @@
 
+Username Request: 2015/04/25 16:00:13.660254 - A User requested to retrieve the username, patrick92. Request successful and username emailed.
+Password Reset Request: 2015/04/25 16:00:43.116111 - A User requested to reset password through email for username, patrick92. Request successful.
+Password Reset Request: 2015/04/25 16:01:10.924737 - A User attempted to reset password through security question for username, patrick92. Request successful.
+Password Reset Successful: 2015/04/25 16:01:25.584392 - A User has successfully reset the password for username, patrick92.
+Login: 2015/04/25 16:01:35.936297 - A User attempted to login with username, patrick92 has attempted to login to the site and failed

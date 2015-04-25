@@ -27,7 +27,14 @@
         $message = "";
         session_start();
         // Security checks
-        if(request_is_post() && request_is_same_domain()) {
+        
+        if (!request_is_same_domain()) {
+			  $log_info = "A User attempted to give a request from a different domain in Login. IP Address: " . $_SERVER['REMOTE_ADDR'];
+           log_error("Request Forgery", $log_info);
+           return;
+		  }
+        
+        if(request_is_post()) {
             $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'];
             if(!csrf_token_is_valid() && !csrf_token_is_recent()) {
                 $log_info = "A User attempted to submit an invalid form in Login. IP Address: " . $_SERVER['REMOTE_ADDR'];
@@ -149,10 +156,7 @@
                     $bad_authentication .= "</div>";
                 }
             }
-        } else {
-			  $log_info = "A User attempted to give a post request from a different domain in Login. IP Address: " . $_SERVER['REMOTE_ADDR'];
-           log_error("Request Forgery", $log_info);
-		  }
+        } 
         // Removes unwanted and potentially malicious characters
         // from the form data to prevent XSS hacks / exploits
         function test_input($data) {

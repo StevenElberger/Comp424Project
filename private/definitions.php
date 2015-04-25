@@ -16,5 +16,4 @@
    define("EMAIL_USERNAME", "healthmateemail@yahoo.com");
    define("EMAIL_PASSWORD", "#490testEmail");
 
-
 ?>

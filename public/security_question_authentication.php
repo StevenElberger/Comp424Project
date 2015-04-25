@@ -45,7 +45,19 @@ else {
 	$error = true;
 }
 
-if(request_is_post() && request_is_same_domain()) {
+// Only process request if the request is from the same domain as the 
+// machine that generated the form from, the request is a post, and if the form is valid
+
+if(!request_is_same_domain()) {
+	
+	// Request Forgery, log acivity
+	$log_info = "A User attempted to give a request from a different domain in Security Question Authentication. IP Address: " . $_SERVER['REMOTE_ADDR'];
+   log_error("Request Forgery", $log_info);
+   return;
+
+}
+
+if(request_is_post()) {
 	
   if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
   	$message = "Sorry, request was not valid.";
@@ -99,9 +111,6 @@ if(request_is_post() && request_is_same_domain()) {
 			echo header("Location: /Comp424Project/public/incorrect_security_answer.php");
 		}
   }
-} else {
-	$log_info = "A User attempted to give a post request from a different domain in Security Question Authentication. IP Address: " . $_SERVER['REMOTE_ADDR'];
-   log_error("Request Forgery", $log_info);
 }
 
 ?>

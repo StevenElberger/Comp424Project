@@ -37,9 +37,18 @@
             if (isset($usernameError)) {
                 $usernameError = "";
             }
+            
+            if(!request_is_same_domain()) {
+	
+				// Request Forgery, log acivity
+				$log_info = "A User attempted to give a request from a different domain in Create Account. IP Address: " . $_SERVER['REMOTE_ADDR'];
+			   log_error("Request Forgery", $log_info);
+			   return;
+
+				}
 
            // Only process POST requests, not GET
-           if(request_is_post() && request_is_same_domain()) {
+           if(request_is_post()) {
 			  if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
 			  	$message = "Sorry, request was not valid.";
 			  	$log_info = "A User attempted to submit an invalid form in Create Account. IP Address: " . $_SERVER['REMOTE_ADDR'];
@@ -207,9 +216,6 @@
                 }
             }
 			}
-		} else {
-			$log_info = "A User attempted to give a post request from a different domain in Create Account. IP Address: " . $_SERVER['REMOTE_ADDR'];
-         log_error("Request Forgery", $log_info);
 		}
 
             // Removes unwanted and potentially malicious characters
