@@ -21,6 +21,7 @@
         <?php
             // Grab security functions
             require_once("/var/www/html/Comp424Project/private/initialize.php");
+	    session_start();
             // Flag for first load
             $firstLoad = true;
             // Error placeholders
@@ -39,7 +40,6 @@
 
            // Only process POST requests, not GET
            if(request_is_post() && request_is_same_domain()) {
-	
 			  if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
 			  	$message = "Sorry, request was not valid.";
 			  	$log_info = "A User attempted to submit an invalid form in Create Account. IP Address: " . $_SERVER['REMOTE_ADDR'];
@@ -241,6 +241,7 @@
                 </div>
                 <?php echo $usernameError; ?>
                 <form role="form" id="account-form" class="form-horizontal login-form" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
+		<?php echo csrf_token_tag(); ?>
                     <div class="form-group" id="first-name-input">
                         <div class="col-md-12">
                             <label>First Name:</label>

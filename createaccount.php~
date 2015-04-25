@@ -21,6 +21,7 @@
         <?php
             // Grab security functions
             require_once("/var/www/html/Comp424Project/private/initialize.php");
+	    session_start();
             // Flag for first load
             $firstLoad = true;
             // Error placeholders
@@ -38,8 +39,7 @@
             }
 
            // Only process POST requests, not GET
-           if(request_is_post() && request_is_same_domain()) {
-	
+           if(request_is_post()) { //request_is_same_domain()
 			  if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
 			  	$message = "Sorry, request was not valid.";
 			  	$log_info = "A User attempted to submit an invalid form in Create Account. IP Address: " . $_SERVER['REMOTE_ADDR'];
@@ -178,7 +178,7 @@
 
 		            // Adds a new user account with form data into the physician table of the database
 		            // -- To do: form checking (e.g., username already exists, security, etc.)
-		            $sql = "INSERT INTO users (username, password, first_name, last_name, security_question, security_answer, security_question2, security_answer2,
+		            $sql = "INSERT INTO users (username, password, first_name, last_name, security_question, security_answer, security_question_2, security_answer_2,
 		             company, phone, email, birthday, times_logged_in, last_login, valid) VALUES ('".$username."', '".$hash_pass."', '".$first_name."', '".$last_name.
 		             "', '".$security_question."', '".$security_answer."', '".$security_question_2."', '".$security_answer_2."', '".$company."', '".$phone."', '".$email."', '".$birthday."', 0, 0, 0)";
 
@@ -241,6 +241,7 @@
                 </div>
                 <?php echo $usernameError; ?>
                 <form role="form" id="account-form" class="form-horizontal login-form" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
+		<?php echo csrf_token_tag(); ?>
                     <div class="form-group" id="first-name-input">
                         <div class="col-md-12">
                             <label>First Name:</label>

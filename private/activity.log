@@ -1,1 +1,28 @@
 
+Username Request: 2015/04/24 16:00:09.779341 - A User requested to retrieve a username that does not exist. The email used is stevenelberger@gmail.com.
+Login: 2015/04/24 16:09:53.356381 - A User attempted to login with username, stevenelberger has attempted to login to the site and failed
+Login: 2015/04/24 16:10:00.316639 - A User attempted to login with username, stevenelberger has attempted to login to the site and failed
+Login: 2015/04/24 16:11:11.170307 - A User attempted to login with username, stevenelberger has attempted to login to the site and failed
+Login: 2015/04/24 16:12:37.638370 - A User attempted to login with username, stevenelberger has attempted to login to the site and failed
+Login: 2015/04/24 16:17:03.714702 - A User attempted to login with username, stevenelberger has attempted to login to the site and failed
+Login: 2015/04/24 16:21:12.259157 - A User attempted to login with username, stevenelberger has attempted to login to the site and failed
+Login: 2015/04/24 16:27:36.677505 - A User attempted to login with username, stevenelberger and was successful
+Login: 2015/04/24 16:29:08.722617 - A User attempted to login with username, stevenelberger has attempted to login to the site and failed
+Login: 2015/04/24 16:30:04.871258 - A User attempted to login with username, stevenelberger has attempted to login to the site and failed
+Login: 2015/04/24 16:30:09.501056 - A User attempted to login with username, stevenelberger has attempted to login to the site and failed
+Login: 2015/04/24 16:32:00.600804 - A User attempted to login with username, stevenelberger has attempted to login to the site and failed
+Login: 2015/04/24 16:33:43.111394 - A User attempted to login with username, stevenelberger has attempted to login to the site and failed
+Login: 2015/04/24 16:33:58.238579 - A User attempted to login with username, stevenelberger has attempted to login to the site and failed
+Login: 2015/04/24 16:34:34.930019 - A User attempted to login with username, stevenelberger and was successful
+Login: 2015/04/24 16:35:20.303047 - A User attempted to login with username, stevenelberger and was successful
+Username Request: 2015/04/24 16:35:47.317661 - A User requested to retrieve the username, stevenelberger. Request successful and username emailed.
+Password Reset Request: 2015/04/24 16:38:15.732504 - A User requested to reset password through email for username, stevenelberger. Request successful.
+Password Reset Request: 2015/04/24 16:40:39.948443 - A User requested to reset password through email for username, stevenelberger. Request successful.
+Password Reset Request: 2015/04/24 16:41:42.216970 - A User attempted to reset password through security question for username, stevenelberger. Request successful.
+Password Reset Successful: 2015/04/24 16:41:50.443258 - A User has successfully reset the password for username, stevenelberger.
+Login: 2015/04/24 16:44:06.489592 - A User attempted to login with username, stevenelberger and was successful
+Password Reset Request: 2015/04/24 16:44:42.127948 - A User requested to reset password through email for username, stevenelberger. Request successful.
+Login: 2015/04/24 16:46:06.700934 - A User attempted to login with username, stevenelberger has attempted to login to the site and failed
+Password Reset Request: 2015/04/24 16:48:25.27483 - A User requested to reset password through email for username, stevenelberger. Request successful.
+Password Reset Successful: 2015/04/24 16:48:54.637902 - A User has successfully reset the password for username, stevenelberger.
+Login: 2015/04/24 16:48:59.948707 - A User attempted to login with username, stevenelberger and was successful

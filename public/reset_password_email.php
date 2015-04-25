@@ -110,7 +110,7 @@ if(request_is_post() && request_is_same_domain()) {
 			<fieldset>
 				<p>Set your new password.</p>
 	    
-					<?php $url = "reset_password.php?token=" . sanitize_url($token); ?>
+					<?php $url = "reset_password_email.php?token=" . sanitize_url($token); ?>
 				<form role="form" id="reset-password-form" action="<?php echo $url; ?>" method="POST" accept-charset="utf-8" class="form-horizontal login-form">
 					<?php echo csrf_token_tag(); ?>
 				  <div class="form-group" id="password-input">
