@@ -39,7 +39,7 @@
             }
 
            // Only process POST requests, not GET
-           if(request_is_post() && request_is_same_domain()) {
+           if(request_is_post()) { //request_is_same_domain()
 			  if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
 			  	$message = "Sorry, request was not valid.";
 			  	$log_info = "A User attempted to submit an invalid form in Create Account. IP Address: " . $_SERVER['REMOTE_ADDR'];
