@@ -21,3 +21,10 @@ Username Request: 2015/04/25 20:01:37.667922 - A User requested to retrieve the 
 Password Reset Request: 2015/04/25 20:02:38.287626 - A User requested to reset password through email for username, stevenelberger. Request successful.
 Password Reset Successful: 2015/04/25 20:05:18.439936 - A User has successfully reset the password for username, stevenelberger.
 Login: 2015/04/25 20:06:55.96581 - A User attempted to login with username, stevenelberger and was successful
+Login: 2015/04/25 20:25:51.562325 - A User attempted to login with username, stevenelberger and was successful
+Password Reset Request: 2015/04/25 20:26:20.583686 - A User requested to reset password through email for username, stevenelberger. Request successful.
+Password Reset Successful: 2015/04/25 20:27:14.152580 - A User has successfully reset the password for username, stevenelberger.
+Login: 2015/04/25 20:27:20.504549 - A User attempted to login with username, stevenelberger and was successful
+Password Reset Request: 2015/04/25 20:29:03.764885 - A User requested to reset password through email for username, stevenelberger. Request successful.
+Password Reset Successful: 2015/04/25 20:29:17.868545 - A User has successfully reset the password for username, stevenelberger.
+Login: 2015/04/25 20:29:21.386673 - A User attempted to login with username, stevenelberger and was successful
