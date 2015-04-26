@@ -25,7 +25,7 @@ if(!request_is_same_domain()) {
 	// Request Forgery, log acivity
 	$log_info = "A User attempted to give a request from a different domain in Reset Password Email. IP Address: " . $_SERVER['REMOTE_ADDR'];
    log_error("Request Forgery", $log_info);
-   return;
+   //return;
 
 }
 

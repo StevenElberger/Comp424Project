@@ -133,7 +133,7 @@ function email_reset_token($username) {
       // fetch the first row of the results of the query
       $row = $users->fetch_assoc();
       
-      $ip_address = "108.77.76.162";
+      $ip_address = "https://108.77.76.162";
       
       $to_name = $row["username"];
       $to = $row["email"];
@@ -202,7 +202,7 @@ function email_username_token($email) {
       // fetch the first row of the results of the query
       $row = $users->fetch_assoc();
       
-      $ip_address = "108.77.76.162";
+      $ip_address = "https://108.77.76.162";
       
       $to_name = $row["username"];
       $to = $row["email"];
@@ -270,7 +270,7 @@ function email_validation_token($username) {
       // fetch the first row of the results of the query
       $row = $users->fetch_assoc();
       
-      $ip_address = "108.77.76.162";
+      $ip_address = "https://108.77.76.162";
       
       $to_name = $row["username"];
       $to = $row["email"];

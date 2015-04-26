@@ -29,10 +29,10 @@
         // Security checks
         
         if (!request_is_same_domain()) {
-			  $log_info = "A User attempted to give a request from a different domain in Login. IP Address: " . $_SERVER['REMOTE_ADDR'];
-           log_error("Request Forgery", $log_info);
-           return;
-		  }
+		$log_info = "A User attempted to give a request from a different domain in Login. IP Address: " . $_SERVER['REMOTE_ADDR'];
+		log_error("Request Forgery", $log_info);
+		//return;
+	}
         
         if(request_is_post()) {
             $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'];
@@ -184,7 +184,7 @@
                             <label>Username:</label>
                             <div class="input-group">
                                 <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                                <input type="username" name="username" class="form-control" data-parsley-required="true" data-parsley-group="block1" data-parsley-ui-enabled="false">
+                                <input type="username" name="username" class="form-control" data-parsley-required="true" data-parsley-group="block1" data-parsley-length="[3, 32]" data-parsley-ui-enabled="false">
                             </div>
                         </div>
                     </div>
@@ -193,7 +193,7 @@
                             <label>Password:</label>
                             <div class="input-group">
                                 <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
-                                <input type="password" name="password" class="form-control" data-parsley-required="true" data-parsley-group="block2" data-parsley-ui-enabled="false">
+                                <input type="password" name="password" class="form-control" data-parsley-required="true" data-parsley-group="block2" data-parsley-length="[3, 32]" data-parsley-ui-enabled="false">
                             </div>
                         </div>
                         <div class="col-md-12" style="margin-top: 5%;">

@@ -253,7 +253,7 @@
                             <label>First Name:</label>
                             <div class="input-group">
                                 <span class="input-group-addon"><span class="glyphicon">FN</span></span>
-                                <input type="text" name="first_name" id="first-name" class="form-control" data-toggle="tooltip" data-placement="right" title="Wenis" value="<?php echo $first_name; ?>" data-parsley-required="true" data-parsley-group="block1" data-parsley-ui-enabled="false">
+                                <input type="text" name="first_name" id="first-name" class="form-control" data-toggle="tooltip" data-placement="right" title="Wenis" value="<?php echo $first_name; ?>" data-parsley-required="true" data-parsley-length="[3, 32]" data-parsley-group="block1" data-parsley-ui-enabled="false">
                             </div>
                         </div>
                     </div>
@@ -262,7 +262,7 @@
                             <label>Last Name:</label>
                             <div class="input-group">
                                 <span class="input-group-addon"><span class="glyphicon">LN</span></span>
-                                <input type="text" name="last_name" id="last-name" class="form-control" value="<?php echo $last_name; ?>" data-parsley-required="true" data-parsley-group="block2" data-parsley-ui-enabled="false">
+                                <input type="text" name="last_name" id="last-name" class="form-control" value="<?php echo $last_name; ?>" data-parsley-required="true" data-parsley-group="block2" data-parsley-length="[3, 32]" data-parsley-ui-enabled="false">
                             </div>
                         </div>
                     </div>
@@ -302,7 +302,7 @@
                             <label>Email:</label><label class="control-label" id="email-control"></label>
                             <div class="input-group">
                                 <span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></span>
-                                <input type="text" id="email" name="email" class="form-control" value="<?php echo $email; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="must be valid email address" data-parsley-required="true" data-parsley-type="email" data-parsley-length="[8, 32]" data-parsley-group="block6" data-parsley-ui-enabled="false">
+                                <input type="text" id="email" name="email" class="form-control" value="<?php echo $email; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="must be valid email address" data-parsley-required="true" data-parsley-type="email" data-parsley-length="[3, 32]" data-parsley-group="block6" data-parsley-ui-enabled="false">
                             </div>
                         </div>
                     </div>
@@ -311,7 +311,7 @@
                             <label>Security Question:</label><label class="control-label" id="security-question-control"></label>
                             <div class="input-group">
                                 <span class="input-group-addon"><span class="glyphicon">Q1</span></span>
-                                <input type="text" id="security_question" name="security_question" class="form-control" value="<?php echo $security_question; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="Enter a Question that you can answer" data-parsley-required="true" data-parsley-group="block7" data-parsley-ui-enabled="false">
+                                <input type="text" id="security_question" name="security_question" class="form-control" value="<?php echo $security_question; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="Enter a Question that you can answer" data-parsley-required="true" data-parsley-group="block7" data-parsley-length="[1, 32]" data-parsley-ui-enabled="false">
                             </div>
                         </div>
                     </div>
@@ -320,7 +320,7 @@
                             <label>Security Question Answer:</label><label class="control-label" id="security-answer-control"></label>
                             <div class="input-group">
                                 <span class="input-group-addon"><span class="glyphicon">A1</span></span>
-                                <input type="text" id="security_answer" name="security_answer" class="form-control" value="<?php echo $security_answer; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="Answer to Security Question" data-parsley-required="true" data-parsley-group="block8" data-parsley-ui-enabled="false">
+                                <input type="text" id="security_answer" name="security_answer" class="form-control" value="<?php echo $security_answer; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="Answer to Security Question" data-parsley-required="true" data-parsley-group="block8" data-parsley-length="[1, 32]" data-parsley-ui-enabled="false">
                             </div>
                         </div>
                     </div>
@@ -329,7 +329,7 @@
                             <label>Security Question 2:</label><label class="control-label" id="security-question-2-control"></label>
                             <div class="input-group">
                                 <span class="input-group-addon"><span class="glyphicon">Q2</span></span>
-                                <input type="text" id="security_question_2" name="security_question_2" class="form-control" value="<?php echo $security_question_2; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="Enter a Question that you can answer" data-parsley-required="true" data-parsley-group="block9" data-parsley-ui-enabled="false">
+                                <input type="text" id="security_question_2" name="security_question_2" class="form-control" value="<?php echo $security_question_2; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="Enter a Question that you can answer" data-parsley-required="true" data-parsley-group="block9" data-parsley-length="[1, 32]" data-parsley-ui-enabled="false">
                             </div>
                         </div>
                     </div>
@@ -338,7 +338,7 @@
                             <label>Security Question Answer 2:</label><label class="control-label" id="security-answer-2-control"></label>
                             <div class="input-group">
                                 <span class="input-group-addon"><span class="glyphicon">A2</span></span>
-                                <input type="text" id="security_answer_2" name="security_answer_2" class="form-control" value="<?php echo $security_answer_2; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="Answer to Security Question" data-parsley-required="true" data-parsley-group="block10" data-parsley-ui-enabled="false">
+                                <input type="text" id="security_answer_2" name="security_answer_2" class="form-control" value="<?php echo $security_answer_2; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="Answer to Security Question" data-parsley-required="true" data-parsley-group="block10" data-parsley-length="[1, 32]" data-parsley-ui-enabled="false">
                             </div>
                         </div>
                     </div>
@@ -347,7 +347,7 @@
                             <label>Company:</label>
                             <div class="input-group">
                                 <span class="input-group-addon"><span class="glyphicon glyphicon-globe"></span></span>
-                                <input type="text" id="company" name="company" class="form-control" value="<?php echo $company; ?>" data-parsley-required="true" data-parsley-group="block11" data-parsley-ui-enabled="false">
+                                <input type="text" id="company" name="company" class="form-control" value="<?php echo $company; ?>" data-parsley-required="true" data-parsley-group="block11" data-parsley-length="[3, 32]" data-parsley-ui-enabled="false">
                             </div>
                         </div>
                     </div>
