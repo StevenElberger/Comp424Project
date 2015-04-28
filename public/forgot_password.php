@@ -10,27 +10,26 @@ $message = "";
 // machine that generated the form from, the request is a post, and if the form is valid
 if(request_is_post()) {
 	
-if(request_is_same_domain()) {
-	
-  if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
-	  
-	  // form is not valid, notify the user and log the information
-  	  $message = "Sorry, request was not valid.";
-  	  $log_info = "A User attempted to submit an invalid form in Forgot Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
-     log_error("Form Forgery", $log_info);
-     
-  } else {
-    // CSRF tests passed--form was created by us recently.
+	if(request_is_same_domain()) {
+		
+		if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
+			
+			// form is not valid, notify the user and log the information
+  	      $message = "Sorry, request was not valid.";
+  	      $log_info = "A User attempted to submit an invalid form in Forgot Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
+         log_error("Form Forgery", $log_info);
+       } else {
+         // CSRF tests passed--form was created by us recently.
     
-    // Store the username and move forward on the reset password process
-    $_SESSION["username"] = test_input($_POST["username"]);
-    echo header("Location: /Comp424Project/public/password_reset_option.php");
-  }
-} else {
-	// Request Forgery, log acivity
-	$log_info = "A User attempted to give a request from a different domain in Forgot Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
-   log_error("Request Forgery", $log_info);
-}
+         // Store the username and move forward on the reset password process
+         $_SESSION["username"] = test_input($_POST["username"]);
+         echo header("Location: /Comp424Project/public/password_reset_option.php");
+       }
+   } else {
+	   // Request Forgery, log acivity
+	   $log_info = "A User attempted to give a request from a different domain in Forgot Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
+      log_error("Request Forgery", $log_info);
+   }
 }
 
 // Removes unwanted and potentially malicious characters
@@ -39,7 +38,6 @@ function test_input($data) {
 	$data = trim($data);
 	$data = sanitize_sql($data);
 	$data = htmlspecialchars($data);
-	//$data = json_encode($data);
 	return $data;
 }
 

@@ -87,81 +87,92 @@
 
              // Only process POST requests, not GET
            else if(request_is_post()) {
-	
-			  if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
-			  	$message = "Sorry, request was not valid.";
-			  	$log_info = "A User attempted to submit an invalid form in Create Account. IP Address: " . $_SERVER['REMOTE_ADDR'];
-			   log_error("Form Forgery", $log_info);
-			  } else {
+				  
+				  // Make sure request is from the same domain
+              if(request_is_same_domain()) {
+					  
+					  if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
+						  
+						  $message = "Sorry, request was not valid.";
+			  	        $log_info = "A User attempted to submit an invalid form in Create Account. IP Address: " . $_SERVER['REMOTE_ADDR'];
+			           log_error("Form Forgery", $log_info);
+			           
+			        } else {
+						  
+						  $firstLoad = false;
+                    // Check that the required fields have been set
+                    if (empty($_POST["first_name"])) {
+							  $firstNameError = "*";
+                    } else {
+                       $first_name = test_input($_POST["first_name"]);
+                    }
 
-                $firstLoad = false;
-                // Check that the required fields have been set
-                if (empty($_POST["first_name"])) {
-                    $firstNameError = "*";
-                } else {
-                    $first_name = test_input($_POST["first_name"]);
-                }
+                    if (empty($_POST["last_name"])) {
+                       $lastNameError = "*";
+                    } else {
+                       $last_name = test_input($_POST["last_name"]);
+                    }
 
-                if (empty($_POST["last_name"])) {
-                    $lastNameError = "*";
-                } else {
-                    $last_name = test_input($_POST["last_name"]);
-                }
+                    if (empty($_POST["email"])) {
+                       $emailError = "*";
+                    } else {
+                       $email = test_input($_POST["email"]);
+                    }
 
-                if (empty($_POST["email"])) {
-                    $emailError = "*";
-                } else {
-                    $email = test_input($_POST["email"]);
-                }
+                    if (empty($_POST["company"])) {
+                       $companyError = "*";
+                    } else {
+                       $company = test_input($_POST["company"]);
+                    }
 
-                if (empty($_POST["company"])) {
-                    $companyError = "*";
-                } else {
-                    $company = test_input($_POST["company"]);
-                }
+                    if (empty($_POST["phone"])) {
+                       $phoneError = "*";
+                    } else {
+                       $phone = test_input($_POST["phone"]);
+                    }
+                    
+                    // As long as all variables were initialized, the data is good to go
+                    if (($first_name !== "") && ($last_name !== "") && ($company !== "") && ($phone !== "") && !empty($_POST["update"])) {
+							  
+							  // Create connection
+                       $conn = new mysqli(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
 
-                if (empty($_POST["phone"])) {
-                    $phoneError = "*";
-                } else {
-                    $phone = test_input($_POST["phone"]);
-                }
+                       // Check connection
+                       if ($conn->connect_error) {
+                          die("Connection failed: " . $conn->connect_error);
+                          $log_info = "Connection to DB Failed in Account Settings";
+                          log_error("DB Connection Error", $log_info);
+                       }
 
-            // As long as all variables were initialized, the data is good to go
-            if (($first_name !== "") && ($last_name !== "") && ($company !== "") && ($phone !== "") && !empty($_POST["update"])) {
+                       // Update the user account with form data into the physician table of the database
+                       $sql = "UPDATE users SET first_name='".$first_name."', last_name='".$last_name."', company='".$company."', phone='".
+                       $phone."', email='".$email."' WHERE username='".$username."'";
 
-                // Create connection
-                $conn = new mysqli(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
+                       if ($conn->query($sql) === TRUE) {
+								  
+								  // Redirect upon successful account update
+                          header("Location: /Comp424Project/welcome.php");
+                          
+                       } else {
+								  
+								  // Error in Update
+                          echo "Error: " . $sql . "<br />" . $conn->error;
+                       }
 
-                // Check connection
-                if ($conn->connect_error) {
-                    die("Connection failed: " . $conn->connect_error);
-                }
-
-                // Update the user account with form data into the physician table of the database
-                $sql = "UPDATE users SET first_name='".$first_name."', last_name='".$last_name."', company='".$company."', phone='".
-                $phone."', email='".$email."' WHERE username='".$username."'";
-
-                if ($conn->query($sql) === TRUE) {
-
-                    // Redirect upon successful account update
-                    header("Location: /Comp424Project/welcome.php");
-
-                } else {
-
-                        // Error in Update
-                    echo "Error: " . $sql . "<br />" . $conn->error;
-
-                }
-
-                // Close the database connection
-                $conn->close();
-            } else {
-                if (!$firstLoad) {
-                    $requiredFields = "The following fields are required: ";
-                }
-            }
-			}
-		}
+                       // Close the database connection
+                       $conn->close();
+                    } else {
+							  
+							  if (!$firstLoad) {
+								  $requiredFields = "The following fields are required: ";
+							  }
+						  }
+					  }
+				 } else {
+					 $log_info = "A User attempted to give a request from a different domain in Account Settings. IP Address: " . $_SERVER['REMOTE_ADDR'];
+				    log_error("Request Forgery", $log_info);
+				 }
+		    }
 
             // Removes unwanted and potentially malicious characters
             // from the form data to prevent XSS hacks / exploits
