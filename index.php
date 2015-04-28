@@ -28,140 +28,139 @@
         session_start();
         // Security checks
         
-        if (!request_is_same_domain()) {
-		$log_info = "A User attempted to give a request from a different domain in Login. IP Address: " . $_SERVER['REMOTE_ADDR'];
-		log_error("Request Forgery", $log_info);
-		//return;
-	}
-        
-        if(request_is_post()) {
-            $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'];
-            if(!csrf_token_is_valid() && !csrf_token_is_recent()) {
-                $log_info = "A User attempted to submit an invalid form in Login. IP Address: " . $_SERVER['REMOTE_ADDR'];
-                log_error("Form Forgery", $log_info);
-            } else {
-                // CSRF tests passed--form was created by us recently.
-                if (empty($_POST["username"])) {
-                    $usernameError = "Please enter a username";
-                } else {
-                    $username = test_input($_POST["username"]);
-                }
-                if (empty($_POST["password"])) {
-                    $passwordError = "Please enter a password";
-                } else {
-                    $password = test_input($_POST["password"]);
-                }
-                
-                $conn = new mysqli(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
-                
-                // Check connection
-		            if ($conn->connect_error) {
-		                die("Connection failed: " . $conn->connect_error);
-		                $log_info = "Connection to DB Failed in Login";
-                      log_error("DB Connection Error", $log_info);
-		            }
-                
-                // check to make sure username actually exists
-                if (username_exists($username, $conn)) {
-                    // then check if the user is throttled
-                    $throttle_delay = throttle_failed_logins($username);
-                    if($throttle_delay > 0) {
-                        // Throttled at the moment, try again after delay period
-                        //$message = "Too many failed logins.";
-                        //$message .= "You must wait {$throttle_delay} minutes before you can attempt another login.";
-                        $bad_authentication = "<div class='alert alert-danger login-error' role='alert'>";
-                        $bad_authentication .= "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>";
-                        $bad_authentication .= "<span class='sr-only'>Error:</span>";
-                        $bad_authentication .= "<span>Too many failed logins.</span>";
-                        $bad_authentication .= "<span>You must wait {$throttle_delay} minutes before you can attempt another login.</span>";
-                        $bad_authentication .= "</div>";
-                        
-                        $log_info = "A User attempted many times to login using username, " . $username . ", and failed. IP Address: " . $_SERVER['REMOTE_ADDR'];
-                        log_error("Failed Login", $log_info);
-                        
-                    } else {
-                        // not throttled - make connection to db
-                        // and check the credentials
-                        if (($username !== "") && ($password !== "")) {
-                            // Create connection
-                            $conn = new mysqli(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
-                            // Check connection
-                            if ($conn->connect_error) {
-                                die("Connection failed: " . $conn->connect_error);
-                            }
-                            // Grab the password for the given username
-                            $sql = "SELECT * FROM users WHERE username = '" . $username . "'";
-                            
-                            $result = $conn->query($sql);
-                            // If there's a match, check to make sure authentication was successful
-                            if ($result->num_rows > 0) {
-                                $row = $result->fetch_assoc();
-                                $valid = $row["valid"];
-                                // We know the username matches so check the password against the hash
-                                if (password_verify($password, $row["password"]) && $valid != 0) {
-				    // grab last login and times logged in
-				    $last_login_sql = "SELECT last_login FROM users WHERE username = '" . $username . "'";
-				    $last_login = $conn->query($last_login_sql);
-				    $_SESSION["last_login"] = $last_login;
-				    // -- TEST CODE --
-				    $times_logged_in_sql = "SELECT times_logged_in FROM users WHERE username = '" . $username . "'";
-				    $times_logged_in = $conn->query($times_logged_in_sql);
-				    if ($times_logged_in->num_rows > 0) {
-					$row = $times_logged_in->fetch_assoc();
-					$_SESSION["times_logged_in"] = $row["times_logged_in"];
-					$times_logged_in_increment = $row["times_logged_in"] + 1;
-					$update_times_logged_in_sql = "UPDATE users SET times_logged_in = '" . $times_logged_in_increment . "'  WHERE username = '" . $username . "'";
-					$update_times_logged_in = $conn->query($update_times_logged_in_sql);
-				    }
-                                    // Initialize session data and
-                                    // redirect user to the welcome page
-                                    $_SESSION["username"] = $username;
-                                    clear_failed_login($username);
-                                    after_successful_login();
-                                    $log_info = "A User attempted to login with username, " . $username . " and was successful";
-                                    log_activity("Login", $log_info);
-                                    echo header("Location: /Comp424Project/welcome.php");
-                                } else {
-                                    record_failed_login($username);
-                                    $log_info = "A User attempted to login with username, " .$username . " has attempted to login to the site and failed";
-                                    log_activity("Login", $log_info);
-                                    // Don't let the user know which piece of data was incorrect
-                                    $bad_authentication = "<div class='alert alert-danger login-error' role='alert'>";
-                                    $bad_authentication .= "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>";
-                                    $bad_authentication .= "<span class='sr-only'>Error:</span>";
-                                    $bad_authentication .= "<span> Incorrect username or password</span>";
-                                    $bad_authentication .= "</div>";
-                                }
-                            } else {
-                                record_failed_login($username);
-                                $log_info = "A User attempted to login with username, " . $username . ", and failed, username does not exists";
-                                log_activity("Login", $log_info);
-                                $bad_authentication = "<div class='alert alert-danger' role='alert'>";
-                                $bad_authentication .= "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>";
-                                $bad_authentication .= "<span class='sr-only'>Error:</span>";
-                                $bad_authentication .= "<span> Incorrect username or password</span>";
-                                $bad_authentication .= "</div>";
-                            }
-                            $conn->close();
-                        }
-                    }
-                } else {
-                    // no such username
-                    $log_info = "A User attempted to login with username, " . $username . ", and failed, username does not exists";
-                    log_activity("Login", $log_info);
-                    $bad_authentication = "<div class='alert alert-danger' role='alert'>";
-                    $bad_authentication .= "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>";
-                    $bad_authentication .= "<span class='sr-only'>Error:</span>";
-                    $bad_authentication .= "<span> Incorrect username or password</span>";
-                    $bad_authentication .= "</div>";
-                }
-            }
-        } 
+        if (request_is_post()) {
+	        if(request_is_same_domain()) {
+	            $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'];
+	            if(!csrf_token_is_valid() && !csrf_token_is_recent()) {
+	                $log_info = "A User attempted to submit an invalid form in Login. IP Address: " . $_SERVER['REMOTE_ADDR'];
+	                log_error("Form Forgery", $log_info);
+	            } else {
+	                // CSRF tests passed--form was created by us recently.
+	                if (empty($_POST["username"])) {
+	                    $usernameError = "Please enter a username";
+	                } else {
+	                    $username = test_input($_POST["username"]);
+	                }
+	                if (empty($_POST["password"])) {
+	                    $passwordError = "Please enter a password";
+	                } else {
+	                    $password = test_input($_POST["password"]);
+	                }
+	                
+	                $conn = new mysqli(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
+	                
+	                // Check connection
+			            if ($conn->connect_error) {
+			                die("Connection failed: " . $conn->connect_error);
+			                $log_info = "Connection to DB Failed in Login";
+	                      log_error("DB Connection Error", $log_info);
+			            }
+	                
+	                // check to make sure username actually exists
+	                if (username_exists($username, $conn)) {
+	                    // then check if the user is throttled
+	                    $throttle_delay = throttle_failed_logins($username);
+	                    if($throttle_delay > 0) {
+	                        // Throttled at the moment, try again after delay period
+	                        //$message = "Too many failed logins.";
+	                        //$message .= "You must wait {$throttle_delay} minutes before you can attempt another login.";
+	                        $bad_authentication = "<div class='alert alert-danger login-error' role='alert'>";
+	                        $bad_authentication .= "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>";
+	                        $bad_authentication .= "<span class='sr-only'>Error:</span>";
+	                        $bad_authentication .= "<span>Too many failed logins.</span>";
+	                        $bad_authentication .= "<span>You must wait {$throttle_delay} minutes before you can attempt another login.</span>";
+	                        $bad_authentication .= "</div>";
+	                        
+	                        $log_info = "A User attempted many times to login using username, " . $username . ", and failed. IP Address: " . $_SERVER['REMOTE_ADDR'];
+	                        log_error("Failed Login", $log_info);
+	                        
+	                    } else {
+	                        // not throttled - make connection to db
+	                        // and check the credentials
+	                        if (($username !== "") && ($password !== "")) {
+	                            // Create connection
+	                            $conn = new mysqli(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
+	                            // Check connection
+	                            if ($conn->connect_error) {
+	                                die("Connection failed: " . $conn->connect_error);
+	                            }
+	                            // Grab the password for the given username
+	                            $sql = "SELECT * FROM users WHERE username = '" . $username . "'";
+	                            
+	                            $result = $conn->query($sql);
+	                            // If there's a match, check to make sure authentication was successful
+	                            if ($result->num_rows > 0) {
+	                                $row = $result->fetch_assoc();
+	                                $valid = $row["valid"];
+	                                // We know the username matches so check the password against the hash
+	                                if (password_verify($password, $row["password"]) && $valid != 0) {
+					    // grab last login and times logged in
+					    $last_login_sql = "SELECT last_login FROM users WHERE username = '" . $username . "'";
+					    $last_login = $conn->query($last_login_sql);
+					    $_SESSION["last_login"] = $last_login;
+					    // -- TEST CODE --
+					    $times_logged_in_sql = "SELECT times_logged_in FROM users WHERE username = '" . $username . "'";
+					    $times_logged_in = $conn->query($times_logged_in_sql);
+					    if ($times_logged_in->num_rows > 0) {
+						$row = $times_logged_in->fetch_assoc();
+						$_SESSION["times_logged_in"] = $row["times_logged_in"];
+						$times_logged_in_increment = $row["times_logged_in"] + 1;
+						$update_times_logged_in_sql = "UPDATE users SET times_logged_in = '" . $times_logged_in_increment . "'  WHERE username = '" . $username . "'";
+						$update_times_logged_in = $conn->query($update_times_logged_in_sql);
+					    }
+	                                    // Initialize session data and
+	                                    // redirect user to the welcome page
+	                                    $_SESSION["username"] = $username;
+	                                    clear_failed_login($username);
+	                                    after_successful_login();
+	                                    $log_info = "A User attempted to login with username, " . $username . " and was successful";
+	                                    log_activity("Login", $log_info);
+	                                    echo header("Location: /Comp424Project/welcome.php");
+	                                } else {
+	                                    record_failed_login($username);
+	                                    $log_info = "A User attempted to login with username, " .$username . " has attempted to login to the site and failed";
+	                                    log_activity("Login", $log_info);
+	                                    // Don't let the user know which piece of data was incorrect
+	                                    $bad_authentication = "<div class='alert alert-danger login-error' role='alert'>";
+	                                    $bad_authentication .= "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>";
+	                                    $bad_authentication .= "<span class='sr-only'>Error:</span>";
+	                                    $bad_authentication .= "<span> Incorrect username or password</span>";
+	                                    $bad_authentication .= "</div>";
+	                                }
+	                            } else {
+	                                record_failed_login($username);
+	                                $log_info = "A User attempted to login with username, " . $username . ", and failed, username does not exists";
+	                                log_activity("Login", $log_info);
+	                                $bad_authentication = "<div class='alert alert-danger' role='alert'>";
+	                                $bad_authentication .= "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>";
+	                                $bad_authentication .= "<span class='sr-only'>Error:</span>";
+	                                $bad_authentication .= "<span> Incorrect username or password</span>";
+	                                $bad_authentication .= "</div>";
+	                            }
+	                            $conn->close();
+	                        }
+	                    }
+	                } else {
+	                    // no such username
+	                    $log_info = "A User attempted to login with username, " . $username . ", and failed, username does not exists";
+	                    log_activity("Login", $log_info);
+	                    $bad_authentication = "<div class='alert alert-danger' role='alert'>";
+	                    $bad_authentication .= "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>";
+	                    $bad_authentication .= "<span class='sr-only'>Error:</span>";
+	                    $bad_authentication .= "<span> Incorrect username or password</span>";
+	                    $bad_authentication .= "</div>";
+	                }
+	            }
+        } else {
+			  $log_info = "A User attempted to give a request from a different domain in Login. IP Address: " . $_SERVER['REMOTE_ADDR'];
+				log_error("Request Forgery", $log_info);
+			}
+	  }
         // Removes unwanted and potentially malicious characters
         // from the form data to prevent XSS hacks / exploits
         function test_input($data) {
             $data = trim($data);
-            $data = stripslashes($data);
+            $data = sanitize_sql($data);
             $data = htmlspecialchars($data);
             return $data;
         }

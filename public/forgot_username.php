@@ -10,16 +10,8 @@ $message = "";
 // Only process request if the request is from the same domain as the 
 // machine that generated the form from, the request is a post, and if the form is valid
 
-if(!request_is_same_domain()) {
-	
-	// Request Forgery, log acivity
-	$log_info = "A User attempted to give a request from a different domain in Forgot Username. IP Address: " . $_SERVER['REMOTE_ADDR'];
-   log_error("Request Forgery", $log_info);
-   return;
-
-}
-
 if(request_is_post()) {
+if(request_is_same_domain()) {
 	
   if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
 	
@@ -47,7 +39,7 @@ if(request_is_post()) {
 	}
 	
 	// Clean input for use in sql statments
-	$email = sanitize_sql($email);
+	$email = test_input($email);
 
 	// SQL statement to retrieve rows that have the email column equal to the given email      
 	$sql_statement = "SELECT * FROM users WHERE email='".$email."'";
@@ -92,9 +84,12 @@ if(request_is_post()) {
 	// was found or not, so that we don't reveal which 
 	// usernames exist and which do not.
 	$message = "The username associated with this email account has been emailed.";
-		
-		$email = test_input($email);
   }
+} else {
+	// Request Forgery, log acivity
+	$log_info = "A User attempted to give a request from a different domain in Forgot Username. IP Address: " . $_SERVER['REMOTE_ADDR'];
+   log_error("Request Forgery", $log_info);
+}
 }
 
 
@@ -102,7 +97,7 @@ if(request_is_post()) {
 // from the form data to prevent XSS hacks / exploits
 function test_input($data) {
 	 $data = trim($data);
-	 $data = stripslashes($data);
+	 $data = sanitize_sql($data);
 	 $data = htmlspecialchars($data);
 	 return $data;
 }

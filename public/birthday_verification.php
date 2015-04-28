@@ -45,15 +45,9 @@ else {
 
 // Only process request if the request is from the same domain as the 
 // machine that generated the form from, the request is a post, and if the form is valid
-if(!request_is_same_domain()) {
-	
-	// Request Forgery, log acivity
-	$log_info = "A User attempted to give a request from a different domain in Birthday Verification. IP Address: " . $_SERVER['REMOTE_ADDR'];
-   log_error("Request Forgery", $log_info);
-   return;
+if (request_is_post()) {
 
-}
-if(request_is_post()) {
+if(request_is_same_domain()) {
 	
   if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
 	  
@@ -69,6 +63,8 @@ if(request_is_post()) {
     $birthdayResponse = $_POST["birthday"];
     
 		if(!empty($birthdayResponse)) {
+			
+			$username = sanitize_sql($username);
    
          // SQL statement to retrieve rows that have the username column equal to the given username      
          $sql_statement = "SELECT * FROM users WHERE username='".$username."'";
@@ -110,6 +106,11 @@ if(request_is_post()) {
 			
 		}
   }
+} else {
+	// Request Forgery, log acivity
+	$log_info = "A User attempted to give a request from a different domain in Birthday Verification. IP Address: " . $_SERVER['REMOTE_ADDR'];
+   log_error("Request Forgery", $log_info);
+}
 }
 
 ?>
@@ -120,7 +121,7 @@ if(request_is_post()) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <title>Forgot Password</title>
+    <title>Birthday Verification</title>
     <!-- Bootstrap core CSS-->
     <link href="../newcss/bootstrap.css" type="text/css" rel="stylesheet">
     

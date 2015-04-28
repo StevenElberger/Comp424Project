@@ -12,16 +12,8 @@ if (!isset($_SESSION["username"])) {
 // Only process request if the request is from the same domain as the 
 // machine that generated the form from, the request is a post, and if the form is valid
 
-if(!request_is_same_domain()) {
-	
-	// Request Forgery, log acivity
-	$log_info = "A User attempted to give a request from a different domain in Password Reset Options. IP Address: " . $_SERVER['REMOTE_ADDR'];
-   log_error("Request Forgery", $log_info);
-   return;
-
-}
-
 if(request_is_post()) {
+if(request_is_same_domain()) {
 	
   if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
 	 
@@ -45,6 +37,11 @@ if(request_is_post()) {
 	    
     }
   }
+} else {
+	// Request Forgery, log acivity
+	$log_info = "A User attempted to give a request from a different domain in Password Reset Options. IP Address: " . $_SERVER['REMOTE_ADDR'];
+   log_error("Request Forgery", $log_info);
+}
 }
 
 ?>

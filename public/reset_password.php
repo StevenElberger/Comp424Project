@@ -21,16 +21,8 @@ if(!isset($username)) {
 // Only process request if the request is from the same domain as the 
 // machine that generated the form from, the request is a post, and if the form is valid
 
-if(!request_is_same_domain()) {
-	
-	// Request Forgery, log acivity
-	$log_info = "A User attempted to give a request from a different domain in Reset Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
-   log_error("Request Forgery", $log_info);
-   return;
-
-}
-
 if(request_is_post()) {
+if(request_is_same_domain()) {
 	
   if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
 	  
@@ -45,6 +37,8 @@ if(request_is_post()) {
 		// retrieve the values submitted via the form
 	   $password = $_POST['password'];
 	   $password_confirm = $_POST['confirm'];
+	   
+	   $password = test_input($password);
 			
 		// password and password_confirm are valid
 		// Hash the password and save it to the fake database
@@ -85,6 +79,20 @@ if(request_is_post()) {
 		   
 	   }
 	}
+} else {
+	// Request Forgery, log acivity
+	$log_info = "A User attempted to give a request from a different domain in Reset Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
+   log_error("Request Forgery", $log_info);
+}
+}
+
+// Removes unwanted and potentially malicious characters
+// from the form data to prevent XSS hacks / exploits
+function test_input($data) {
+	 $data = trim($data);
+	 $data = sanitize_sql($data);
+	 $data = htmlspecialchars($data);
+	 return $data;
 }
 
 ?>
