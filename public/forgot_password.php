@@ -4,37 +4,41 @@
 session_start();
 
 // initialize variables to default values
-$username = "";
 $message = "";
 
 // Only process request if the request is from the same domain as the 
 // machine that generated the form from, the request is a post, and if the form is valid
-if(!request_is_same_domain()) {
-	
-	// Request Forgery, log acivity
-	$log_info = "A User attempted to give a request from a different domain in Forgot Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
-   log_error("Request Forgery", $log_info);
-   return;
-
-}
-
-
 if(request_is_post()) {
 	
-  if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
-	  
-	  // form is not valid, notify the user and log the information
-  	  $message = "Sorry, request was not valid.";
-  	  $log_info = "A User attempted to submit an invalid form in Forgot Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
-     log_error("Form Forgery", $log_info);
-     
-  } else {
-    // CSRF tests passed--form was created by us recently.
+	if(request_is_same_domain()) {
+		
+		if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
+			
+			// form is not valid, notify the user and log the information
+  	      $message = "Sorry, request was not valid.";
+  	      $log_info = "A User attempted to submit an invalid form in Forgot Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
+         log_error("Form Forgery", $log_info);
+       } else {
+         // CSRF tests passed--form was created by us recently.
     
-    // Store the username and move forward on the reset password process
-    $_SESSION["username"] = $_POST["username"];
-    echo header("Location: /Comp424Project/public/password_reset_option.php");
-  }
+         // Store the username and move forward on the reset password process
+         $_SESSION["username"] = test_input($_POST["username"]);
+         echo header("Location: /Comp424Project/public/password_reset_option.php");
+       }
+   } else {
+	   // Request Forgery, log acivity
+	   $log_info = "A User attempted to give a request from a different domain in Forgot Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
+      log_error("Request Forgery", $log_info);
+   }
+}
+
+// Removes unwanted and potentially malicious characters
+// from the form data to prevent XSS hacks / exploits
+function test_input($data) {
+	$data = trim($data);
+	$data = sanitize_sql($data);
+	$data = htmlspecialchars($data);
+	return $data;
 }
 
 ?>
@@ -70,7 +74,7 @@ if(request_is_post()) {
 					 <label>Username:</label>
 					 <div class="input-group">
 						  <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-						  <input type="text" name="username" maxlength="32" id="username" class="form-control" value="<?php echo $username; ?>" data-container="body" data-toggle="popover" data-trigger="focus" data-content="Please Enter a Username" data-parsley-required="true" data-parsley-type="alphanum" data-parsley-length="[8, 16]" data-parsley-group="block1" data-parsley-ui-enabled="false">
+						  <input type="text" name="username" maxlength="32" id="username" class="form-control" data-container="body" data-toggle="popover" data-trigger="focus" data-content="Please Enter a Username" data-parsley-required="true" data-parsley-type="alphanum" data-parsley-group="block1" data-parsley-ui-enabled="false">
 					 </div>
 				</div>
 		  </div>

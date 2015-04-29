@@ -21,70 +21,81 @@ if(!isset($username)) {
 // Only process request if the request is from the same domain as the 
 // machine that generated the form from, the request is a post, and if the form is valid
 
-if(!request_is_same_domain()) {
-	
-	// Request Forgery, log acivity
-	$log_info = "A User attempted to give a request from a different domain in Reset Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
-   log_error("Request Forgery", $log_info);
-   return;
-
-}
-
 if(request_is_post()) {
 	
-  if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
-	  
-	// If the form is invalid, notify the user and log this activity
-  	$message = "Sorry, request was not valid.";
-  	$log_info = "A User attempted to submit an invalid form in Reset Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
-   log_error("Form Forgery", $log_info);
-   
-  } else {
-	   // CSRF tests passed--form was created by us recently.
-	
-		// retrieve the values submitted via the form
-	   $password = $_POST['password'];
-	   $password_confirm = $_POST['confirm'];
+	if(request_is_same_domain()) {
+		
+		if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
 			
-		// password and password_confirm are valid
-		// Hash the password and save it to the fake database
-		$hashed_password = password_hash($password, PASSWORD_BCRYPT);
-		
-		// Update Password in Database and Remove Token
-		
-		// Attempt to connect to the database
-		$db = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
-		if (mysqli_connect_errno()) {
-			die("Database connection failed: " . mysqli_connect_error() .
-			  " (" . mysqli_connect_errno() . ")");
-			$log_info = "Connection to DB Failed in Reset Password";
-			log_error("DB Connection Error", $log_info);
-		}
-
-		// SQL statement to retrieve rows that have the username column equal to the given username      
-		$sql_statement = "SELECT * FROM users WHERE username='" .$username. "'";
-
-		// execute query
-		$users = $db->query($sql_statement);
+			// If the form is invalid, notify the user and log this activity
+  	      $message = "Sorry, request was not valid.";
+  	      $log_info = "A User attempted to submit an invalid form in Reset Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
+         log_error("Form Forgery", $log_info);
+         
+      } else {
+			
+			// CSRF tests passed--form was created by us recently.
 	
-		// check if anything was returned by database
-		if ($users->num_rows > 0) {
-		   $sql_statement = "UPDATE users SET password='" .$hashed_password. "' WHERE username ='" .$username."'";
-		   $db->query($sql_statement);
+		   // retrieve the values submitted via the form
+	      $password = $_POST['password'];
+	      $password_confirm = $_POST['confirm'];
+	   
+	      $password = test_input($password);
+			
+		   // password and password_confirm are valid
+		   // Hash the password and save it to the fake database
+		   $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+		
+		   // Update Password in Database and Remove Token
+		
+		   // Attempt to connect to the database
+		   $db = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
+		   if (mysqli_connect_errno()) {
+				die("Database connection failed: " . mysqli_connect_error() .
+			       " (" . mysqli_connect_errno() . ")");
+			   $log_info = "Connection to DB Failed in Reset Password";
+			   log_error("DB Connection Error", $log_info);
+			}
+
+		   // SQL statement to retrieve rows that have the username column equal to the given username      
+		   $sql_statement = "SELECT * FROM users WHERE username='" .$username. "'";
+
+		   // execute query
+		   $users = $db->query($sql_statement);
+	
+		   // check if anything was returned by database
+		   if ($users->num_rows > 0) {
+				
+				$sql_statement = "UPDATE users SET password='" .$hashed_password. "' WHERE username ='" .$username."'";
+		      $db->query($sql_statement);
 		   
-		   $log_info = "A User has successfully reset the password for username, " . $username . ".";
-			log_activity("Password Reset Successful", $log_info);
+		      $log_info = "A User has successfully reset the password for username, " . $username . ".";
+			   log_activity("Password Reset Successful", $log_info);
 		   
-		   // fetch the first row of the results of the query
-			$row = $users->fetch_assoc();
-		   delete_reset_token($row['username']);
-		   $db->close();
+		      // fetch the first row of the results of the query
+			   $row = $users->fetch_assoc();
+		      delete_reset_token($row['username']);
+		      $db->close();
 		   
-		   // Once the Password has been updated, redirect user to login
-		   redirect_to('../index.php');
-		   
-	   }
-	}
+		      // Once the Password has been updated, redirect user to login
+		      redirect_to('../index.php');
+		   }
+		}
+   } else {
+		
+		// Request Forgery, log acivity
+	   $log_info = "A User attempted to give a request from a different domain in Reset Password. IP Address: " . $_SERVER['REMOTE_ADDR'];
+      log_error("Request Forgery", $log_info);
+   }
+}
+
+// Removes unwanted and potentially malicious characters
+// from the form data to prevent XSS hacks / exploits
+function test_input($data) {
+	 $data = trim($data);
+	 $data = sanitize_sql($data);
+	 $data = htmlspecialchars($data);
+	 return $data;
 }
 
 ?>

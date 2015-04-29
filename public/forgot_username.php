@@ -9,92 +9,84 @@ $message = "";
 
 // Only process request if the request is from the same domain as the 
 // machine that generated the form from, the request is a post, and if the form is valid
-
-if(!request_is_same_domain()) {
-	
-	// Request Forgery, log acivity
-	$log_info = "A User attempted to give a request from a different domain in Forgot Username. IP Address: " . $_SERVER['REMOTE_ADDR'];
-   log_error("Request Forgery", $log_info);
-   return;
-
-}
-
 if(request_is_post()) {
 	
-  if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
-	
-	// Form not valid, notify the user and log this activity
-  	$message = "Sorry, request was not valid.";
-  	$log_info = "A User attempted to submit an invalid form in Forgot Username. IP Address: " . $_SERVER['REMOTE_ADDR'];
-   log_error("Form Forgery", $log_info);
-   
-  } else {
-	  
-    // CSRF tests passed--form was created by us recently.
-
-	// retrieve the values submitted via the form
-    $email = $_POST['email'];
-
-			
-	// Search our database to retrieve the user data
-	// Attempt to connect to the database
-	$db = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
-	if (mysqli_connect_errno()) {
-		die("Database connection failed: " . mysqli_connect_error() .
-		  " (" . mysqli_connect_errno() . ")");
-		$log_info = "Connection to DB Failed in Forgot Username";
-		log_error("DB Connection Error", $log_info);
-	}
-	
-	// Clean input for use in sql statments
-	$email = sanitize_sql($email);
-
-	// SQL statement to retrieve rows that have the email column equal to the given email      
-	$sql_statement = "SELECT * FROM users WHERE email='".$email."'";
-	
-	// execute query
-	$users = $db->query($sql_statement);
-
-	// check if anything was returned by database
-	if ($users->num_rows > 0) {
+	if(request_is_same_domain()) {
 		
-		// fetch the first row of the results of the query
-		$row = $users->fetch_assoc();
-		$user = $row['username'];
-		$valid = $row['valid'];
-
-		if($user && $valid != 0) {
+		if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
 			
-		   // Username was found; okay to reset
-		   create_reset_token($user);
-		   email_username_token($email);
+			// Form not valid, notify the user and log this activity
+  	      $message = "Sorry, request was not valid.";
+  	      $log_info = "A User attempted to submit an invalid form in Forgot Username. IP Address: " . $_SERVER['REMOTE_ADDR'];
+         log_error("Form Forgery", $log_info);
+      } else {
+			
+			// CSRF tests passed--form was created by us recently.
+
+	      // retrieve the values submitted via the form
+         $email = $_POST['email'];
+
+			
+	      // Search our database to retrieve the user data
+	      // Attempt to connect to the database
+	      $db = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
+	      if (mysqli_connect_errno()) {
+				die("Database connection failed: " . mysqli_connect_error() .
+		          " (" . mysqli_connect_errno() . ")");
+		      $log_info = "Connection to DB Failed in Forgot Username";
+		      log_error("DB Connection Error", $log_info);
+		   }
+	
+	      // Clean input for use in sql statments
+	      $email = test_input($email);
+
+	      // SQL statement to retrieve rows that have the email column equal to the given email      
+	      $sql_statement = "SELECT * FROM users WHERE email='".$email."'";
+	
+	      // execute query
+	      $users = $db->query($sql_statement);
+
+	      // check if anything was returned by database
+	      if ($users->num_rows > 0) {
+				
+				// fetch the first row of the results of the query
+		      $row = $users->fetch_assoc();
+		      $user = $row['username'];
+		      $valid = $row['valid'];
+		      
+		      if($user && $valid != 0) {
+					
+					// Username was found; okay to reset
+		         create_reset_token($user);
+		         email_username_token($email);
 		   
-		   // Log activity that request was done successfully
-		   $log_info = "A User requested to retrieve the username, " . $user . ". Request successful and username emailed.";
-			log_activity("Username Request", $log_info);
-			
-		 } else {
-			 
-			// Username account not valid; log failed request activity
-			$log_info = "A User requested to retrieve the username, " . $user . ". Request not completed, account not valid.";
-			log_activity("Username Request", $log_info);
-			
-		 }
-	 } else {
-		 
-		 // Username was not found; log failed request activity
-		 $log_info = "A User requested to retrieve a username that does not exist. The email used is " . $email . ".";
-		 log_activity("Username Request", $log_info);
-		 
-	}
-
-	// Message returned is the same whether the user 
-	// was found or not, so that we don't reveal which 
-	// usernames exist and which do not.
-	$message = "The username associated with this email account has been emailed.";
-		
-		$email = test_input($email);
-  }
+		         // Log activity that request was done successfully
+		         $log_info = "A User requested to retrieve the username, " . $user . ". Request successful and username emailed.";
+			      log_activity("Username Request", $log_info);
+			      
+			   } else {
+					
+					// Username account not valid; log failed request activity
+			      $log_info = "A User requested to retrieve the username, " . $user . ". Request not completed, account not valid.";
+			      log_activity("Username Request", $log_info);
+			   }
+			} else {
+				
+				// Username was not found; log failed request activity
+		      $log_info = "A User requested to retrieve a username that does not exist. The email used is " . $email . ".";
+		      log_activity("Username Request", $log_info);
+		   }
+		   
+		   // Message returned is the same whether the user 
+	      // was found or not, so that we don't reveal which 
+	      // usernames exist and which do not.
+	      $message = "The username associated with this email account has been emailed.";
+	   }
+   } else {
+		// Request Forgery, log acivity
+	   $log_info = "A User attempted to give a request from a different domain in Forgot Username. IP Address: " . $_SERVER['REMOTE_ADDR'];
+      log_error("Request Forgery", $log_info);
+   }
 }
 
 
@@ -102,7 +94,7 @@ if(request_is_post()) {
 // from the form data to prevent XSS hacks / exploits
 function test_input($data) {
 	 $data = trim($data);
-	 $data = stripslashes($data);
+	 $data = sanitize_sql($data);
 	 $data = htmlspecialchars($data);
 	 return $data;
 }

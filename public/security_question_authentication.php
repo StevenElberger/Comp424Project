@@ -10,6 +10,9 @@ if (!isset($_SESSION["username"])) {
 // initialize variables to default values
 $username = $_SESSION["username"];
 
+// Sanitize username just in case
+$username = sanitize_sql($username);
+
 $securityQuestion = "";
 $securityAnswer = "";
 $securityQuestion2 = "";
@@ -48,69 +51,78 @@ else {
 // Only process request if the request is from the same domain as the 
 // machine that generated the form from, the request is a post, and if the form is valid
 
-if(!request_is_same_domain()) {
-	
-	// Request Forgery, log acivity
-	$log_info = "A User attempted to give a request from a different domain in Security Question Authentication. IP Address: " . $_SERVER['REMOTE_ADDR'];
-   log_error("Request Forgery", $log_info);
-   return;
-
-}
-
 if(request_is_post()) {
 	
-  if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
-  	$message = "Sorry, request was not valid.";
-  	$log_info = "A User attempted to submit an invalid form in Security Question Authentication. IP Address: " . $_SERVER['REMOTE_ADDR'];
-   log_error("Form Forgery", $log_info);
-  } else {
-    // CSRF tests passed--form was created by us recently.
-    $securityAnswer = $_POST["security_answer"];
-    $securityAnswer2 = $_POST["security_answer_2"];
-    
-		if(!empty($securityAnswer) && !empty($securityAnswer2)) {
-   
-         // SQL statement to retrieve rows that have the username column equal to the given username      
-         $sql_statement = "SELECT * FROM users WHERE username='".$username."'";
+	if(request_is_same_domain()) {
+		
+		if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
+			
+			$message = "Sorry, request was not valid.";
+  	      $log_info = "A User attempted to submit an invalid form in Security Question Authentication. IP Address: " . $_SERVER['REMOTE_ADDR'];
+         log_error("Form Forgery", $log_info);
+      } else {
+			
+			// CSRF tests passed--form was created by us recently.
+         $securityAnswer = $_POST["security_answer"];
+         $securityAnswer2 = $_POST["security_answer_2"];
          
-         // execute query
-         $users = $db->query($sql_statement);
+         if(!empty($securityAnswer) && !empty($securityAnswer2)) {
+				
+				// SQL statement to retrieve rows that have the username column equal to the given username      
+            $sql_statement = "SELECT * FROM users WHERE username='".$username."'";
          
-         // check if anything was returned by database
-         if ($users->num_rows > 0) {
-            // fetch the first row of the results of the query
-            $row = $users->fetch_assoc();
+            // execute query
+            $users = $db->query($sql_statement);
+         
+            // check if anything was returned by database
+            if ($users->num_rows > 0) {
+					
+					// fetch the first row of the results of the query
+               $row = $users->fetch_assoc();
 
-	         if(($securityAnswer == $row['security_answer']) && ($securityAnswer2 == $row['security_answer_2'])) {
-				   // security question answered correctly
-				   create_reset_token($username);
+	            if(($securityAnswer == $row['security_answer']) && ($securityAnswer2 == $row['security_answer_2'])) {
+						
+						// security question answered correctly
+				      create_reset_token($username);
 				   
-				   $log_info = "A User attempted to reset password through security question for username, " . $username . ". Request successful.";
-               log_activity("Password Reset Request", $log_info);
+				      $log_info = "A User attempted to reset password through security question for username, " . $username . ". Request successful.";
+                  log_activity("Password Reset Request", $log_info);
 				   
-				   $sql_statement = "SELECT * FROM users WHERE username='".$username."'";
+				      $sql_statement = "SELECT * FROM users WHERE username='".$username."'";
          
-					// execute query
-					$users = $db->query($sql_statement);
-					$row = $users->fetch_assoc();
-					$token = $row["reset_token"];
-				   $_SESSION["token"] = $token;
-				   echo header("Location: /Comp424Project/public/reset_password.php");
+					   // execute query
+					   $users = $db->query($sql_statement);
+					   $row = $users->fetch_assoc();
+					   $token = $row["reset_token"];
+				      $_SESSION["token"] = $token;
+				      echo header("Location: /Comp424Project/public/reset_password.php");
 				   
-	          } else {
-					$log_info = "A User attmepted to reset password through security question for username, " . $username . ". Request failed.";
+				   } else {
+						
+						// Answered Security Questions Wrong (At least one)
+						$log_info = "A User attmepted to reset password through security question for username, " . $username . ". Request failed.";
+                  log_activity("Password Reset Request", $log_info);
+	               echo header("Location: /Comp424Project/public/incorrect_security_answer.php");
+	            }
+	         } else {
+					
+					// This probably cannot happen, but there is a handle either way
+					$log_info = "A User attmepted to reset password through security question for username, " . $username . ". Request failed, username does not exist.";
                log_activity("Password Reset Request", $log_info);
-	            echo header("Location: /Comp424Project/public/incorrect_security_answer.php");
-	          }
-			 } else {
-				$log_info = "A User attmepted to reset password through security question for username, " . $username . ". Request failed, username does not exist.";
-            log_activity("Password Reset Request", $log_info);
+            }
+         } 
+         
+         if ($error === true) {
+				// Error in reading security question from database, incorrect answer no matter what
+				echo header("Location: /Comp424Project/public/incorrect_security_answer.php");
 			}
-		} 
-		if ($error === true) {
-			echo header("Location: /Comp424Project/public/incorrect_security_answer.php");
 		}
-  }
+	} else {
+		
+		// Request Forgery, log acivity
+	   $log_info = "A User attempted to give a request from a different domain in Security Question Authentication. IP Address: " . $_SERVER['REMOTE_ADDR'];
+      log_error("Request Forgery", $log_info);
+   }
 }
 
 ?>

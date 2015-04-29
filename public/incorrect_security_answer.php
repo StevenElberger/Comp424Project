@@ -2,6 +2,8 @@
 
 <?php
 
+	session_start();
+	session_unset();
 	// Message returned is the same whether the user 
 	// was found or not, so that we don't reveal which 
 	// usernames exist and which do not.
@@ -17,7 +19,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <title>Forgot Password Security Question</title>
+    <title>Forgot Password Security Question Response</title>
     <!-- Bootstrap core CSS-->
     <link href="../newcss/bootstrap.css" type="text/css" rel="stylesheet">
     

@@ -21,7 +21,7 @@
         <?php
             // Grab security functions
             require_once("/var/www/html/Comp424Project/private/initialize.php");
-	    session_start();
+				session_start();
             // Flag for first load
             $firstLoad = true;
             // Error placeholders
@@ -37,18 +37,10 @@
             if (isset($usernameError)) {
                 $usernameError = "";
             }
-            
-            if(!request_is_same_domain()) {
-	
-				// Request Forgery, log acivity
-				$log_info = "A User attempted to give a request from a different domain in Create Account. IP Address: " . $_SERVER['REMOTE_ADDR'];
-			   log_error("Request Forgery", $log_info);
-			   return;
-
-				}
 
            // Only process POST requests, not GET
-           if(request_is_post()) {
+           if (request_is_post()) {
+           if(request_is_same_domain()) {
 			  if(!csrf_token_is_valid() || !csrf_token_is_recent()) {
 			  	$message = "Sorry, request was not valid.";
 			  	$log_info = "A User attempted to submit an invalid form in Create Account. IP Address: " . $_SERVER['REMOTE_ADDR'];
@@ -216,13 +208,18 @@
                 }
             }
 			}
+		} else {
+			// Request Forgery, log acivity
+			$log_info = "A User attempted to give a request from a different domain in Create Account. IP Address: " . $_SERVER['REMOTE_ADDR'];
+			log_error("Request Forgery", $log_info);
 		}
+	}
 
             // Removes unwanted and potentially malicious characters
             // from the form data to prevent XSS hacks / exploits
             function test_input($data) {
                 $data = trim($data);
-                $data = stripslashes($data);
+                $data = sanitize_sql($data);
                 $data = htmlspecialchars($data);
                 return $data;
             }

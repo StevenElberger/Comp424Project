@@ -24,6 +24,8 @@ if (mysqli_connect_errno()) {
    log_error("DB Connection Error", $log_info);
 }
 
+$username = sanitize_sql($username);
+
 // SQL statement to retrieve rows that have the username column equal to the given username      
 $sql_statement = "UPDATE users SET valid='1' WHERE username='" .$username. "'";
 

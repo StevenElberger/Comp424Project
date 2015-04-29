@@ -1,4 +1,5 @@
 
+<<<<<<< HEAD
 Request Forgery: 2015/04/25 18:02:37.573815 - A User attempted to give a request from a different domain in Login. IP Address: 130.166.243.39
 Request Forgery: 2015/04/25 18:03:10.467472 - A User attempted to give a request from a different domain in Login. IP Address: 130.166.243.39
 Request Forgery: 2015/04/25 18:08:20.772175 - A User attempted to give a request from a different domain in Login. IP Address: 130.166.243.39
@@ -28,3 +29,5 @@ Request Forgery: 2015/04/25 20:27:28.209651 - A User attempted to give a request
 Request Forgery: 2015/04/25 20:27:40.17845 - A User attempted to give a request from a different domain in Forgot Password. IP Address: 130.166.243.39
 Request Forgery: 2015/04/25 20:29:09.432692 - A User attempted to give a request from a different domain in Reset Password Email. IP Address: 130.166.243.39
 Request Forgery: 2015/04/28 16:21:55.934347 - A User attempted to give a request from a different domain in Login. IP Address: 130.166.7.131
+=======
+>>>>>>> c7f1b6d8f269bf8216ded854bbda7d8d48b1e4e6
