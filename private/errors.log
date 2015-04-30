@@ -31,3 +31,10 @@ Request Forgery: 2015/04/25 20:29:09.432692 - A User attempted to give a request
 Request Forgery: 2015/04/28 16:21:55.934347 - A User attempted to give a request from a different domain in Login. IP Address: 130.166.7.131
 =======
 >>>>>>> c7f1b6d8f269bf8216ded854bbda7d8d48b1e4e6
+Failed Login: 2015/04/29 20:15:35.641240 - A User attempted many times to login using username, stevenelberger, and failed. IP Address: 130.166.192.115
+Failed Login: 2015/04/29 20:16:10.981723 - A User attempted many times to login using username, stevenelberger, and failed. IP Address: 130.166.192.115
+Failed Login: 2015/04/29 20:18:17.241065 - A User attempted many times to login using username, stevenelberger, and failed. IP Address: 130.166.192.115
+Failed Login: 2015/04/29 20:21:41.496040 - A User attempted many times to login using username, stevenelberger, and failed. IP Address: 130.166.192.115
+Failed Login: 2015/04/29 20:26:56.361154 - A User attempted many times to login using username, stevenelberger, and failed. IP Address: 130.166.192.115
+Failed Login: 2015/04/29 20:27:03.136156 - A User attempted many times to login using username, stevenelberger, and failed. IP Address: 130.166.192.115
+Failed Login: 2015/04/29 20:31:13.42224 - A User attempted many times to login using username, stevenelberger, and failed. IP Address: 130.166.192.115
