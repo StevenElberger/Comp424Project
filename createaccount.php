@@ -24,14 +24,11 @@
 			session_start();
 			// Flag for first load
 			$firstLoad = true;
-			// Error placeholders
-			$firstNameError = $lastNameError = $usernameError = $mismatchError = "";
-			$passwordError = $confirmError = $emailError =  $companyError = $phoneError = $requiredFields = "";
-			$securityQuestionError = $securityAnswerError = $securityQuestionError2 = $securityAnswerError2 = $birthdayError = "";
 			// Placeholders for variables from form
 			$username = $password = $confirm = $first_name = $last_name = $email = $company = $phone = "";
 			$security_question = $security_answer = $security_question_2 = $security_answer_2 = $birthday = "";
-			$captcha = $captcha_error = "";
+			$captcha = "";
+			$requiredFields = "";
 
 			// in case form was submitted and the username already exists
 			if (isset($usernameError)) {
@@ -90,101 +87,10 @@
 						
 						if (!is_empty_or_null($_POST["g-recaptcha-response"]))
 							$captcha = test_input($_POST["g-recaptcha-response"]);
-						/*
-						if (empty($_POST["first_name"])) {
-							$firstNameError = "*";
-						} else {
-							$first_name = test_input($_POST["first_name"]);
-						}
-
-						if (empty($_POST["last_name"])) {
-							$lastNameError = "*";
-						} else {
-							$last_name = test_input($_POST["last_name"]);
-						}
-
-						if (empty($_POST["username"])) {
-							$usernameError = "*";
-						} else {
-							$username = test_input($_POST["username"]);
-						}
-
-						if (empty($_POST["password"])) {
-							$passwordError = "*";
-						} else {
-							$password = test_input($_POST["password"]);
-						}
-
-						if (empty($_POST["confirm"])) {
-							$confirmError = "*";
-						} else {
-							$confirm = test_input($_POST["confirm"]);
-						}
-
-						if (empty($_POST["email"])) {
-							$emailError = "*";
-						} else {
-							$email = test_input($_POST["email"]);
-						}
-				
-						if (empty($_POST["security_question"])) {
-							$securityQuestionError = "*";
-						} else {
-							$security_question = test_input($_POST["security_question"]);
-						}
-				
-						if (empty($_POST["security_answer"])) {
-							$securityAnswerError = "*";
-						} else {
-							$security_answer = test_input($_POST["security_answer"]);
-						}
-				
-						if (empty($_POST["security_question_2"])) {
-							$securityQuestionError2 = "*";
-						} else {
-							$security_question_2 = test_input($_POST["security_question_2"]);
-						}
-				
-						if (empty($_POST["security_answer_2"])) {
-							$securityAnswerError2 = "*";
-						} else {
-							$security_answer_2 = test_input($_POST["security_answer_2"]);
-						}
-
-						if (empty($_POST["company"])) {
-							$companyError = "*";
-						} else {
-							$company = test_input($_POST["company"]);
-						}
-
-						if (empty($_POST["phone"])) {
-							$phoneError = "*";
-						} else {
-							$phone = test_input($_POST["phone"]);
-						}
 						
-						if (empty($_POST["birthday"])) {
-							$birthdayError = "*";
-						} else {
-							$birthday = test_input($_POST["birthday"]);
-						}
-
-						if ($password !== $confirm) {
-							$mismatchError = "Passwords do not match";
-						}
-
-						if (empty($_POST["g-recaptcha-response"])) {
-							// user didn't complete / pass the captcha!
-							$captcha_error = "You must be a robot!";
-						} else {
-							$captcha = $_POST["g-recaptcha-response"];
-						}
-						*/
 						// As long as all variables were initialized, the data is good to go
-						if (($first_name !== "") && ($last_name !== "") && ($username !== "") && ($company !== "") && ($email !== "")
-							&& ($securityAnswer !== "") &&($phone !== "") && ($password !== "") && ($confirm !== "") && 
-							($security_question !== "") && ($mismatchError === "") && ($birthday !== "") && ($security_question_2 !== "")
-							&& ($security_answer_2 !== "") && ($captcha_error === "")) {
+						if (!mempty($first_name, $last_name, $username, $password, $confirm, $email, $security_question,
+							$security_answer, $security_question_2, $security_answer_2, $company, $phone, $birthday, $g-recaptcha-response)) {
 					 
 							// validate user's captcha - send POST to Google
 							$url = 'https://www.google.com/recaptcha/api/siteverify';
@@ -202,8 +108,8 @@
 							$result = file_get_contents($url, false, $context);
 							// response is a JSON object - check for success
 							$object = json_decode($result);
-							// user failed captcha
 							
+							// user failed captcha
 							if ($object->success != 1) {
 								echo "Please complete the CAPTCHA.";
 								var_dump($object);
@@ -219,11 +125,10 @@
 								if ($conn->connect_error) {
 									die("Connection failed: " . $conn->connect_error);
 									$log_info = "Connection to DB Failed in Create Account";
-								  log_error("DB Connection Error", $log_info);
+									log_error("DB Connection Error", $log_info);
 								}
 
 								// Adds a new user account with form data into the physician table of the database
-								// -- To do: form checking (e.g., username already exists, security, etc.)
 								$sql = "INSERT INTO users (username, password, first_name, last_name, security_question, security_answer, security_question_2, security_answer_2,
 								 company, phone, email, birthday, times_logged_in, last_login, valid) VALUES ('".$username."', '".$hash_pass."', '".$first_name."', '".$last_name.
 								 "', '".$security_question."', '".$security_answer."', '".$security_question_2."', '".$security_answer_2."', '".$company."', '".$phone."', '".$email."', '".$birthday."', 0, 0, 0)";
@@ -236,8 +141,8 @@
 									$usernameError .= "</div>";
 								} else if ($conn->query($sql) === TRUE) {
 									// Redirect upon successful account creation
-										 create_reset_token($username);
-										 email_validation_token($username);
+									create_reset_token($username);
+									email_validation_token($username);
 									echo header("Location: /Comp424Project/public/email_validation_notification.php");
 								} else {
 									echo "Error: " . $sql . "<br />" . $conn->error;
@@ -246,7 +151,6 @@
 								// Peace out
 								$conn->close();
 							}
-				
 						} else {
 							if (!$firstLoad) {
 								$requiredFields = "The following fields are required: ";
@@ -254,7 +158,7 @@
 						}
 					}
 				} else {
-					// Request Forgery, log acivity
+					// Request Forgery, log activity
 					$log_info = "A User attempted to give a request from a different domain in Create Account. IP Address: " . $_SERVER['REMOTE_ADDR'];
 					log_error("Request Forgery", $log_info);
 				}
@@ -280,7 +184,20 @@
 			
 			// Checks for empty or null values
 			function is_empty_or_null($string) {
-				return (!isset($string) || trim($string) === '');
+				return (!isset($string) || empty($string));
+			}
+			
+			// Checks multiple arguments for empty or null values
+			// Credit to this StackOverflow post for the great function
+			// http://stackoverflow.com/a/7798842
+			function mempty() {
+				foreach (func_get_args() as $arg) {
+					if (empty($arg))
+						continue;
+					else
+						return false;
+					return true;
+				}
 			}
         ?>
 
@@ -428,45 +345,48 @@
         <!-- Form validation from Parsley -->
         <script src="js/parsley.min.js"></script>
         <script type="text/javascript">
-	function passwordStrength() {
-		var strength = ["", "Weak", "Okay", "Good", "Strong", "Very strong"];
-		var score = 0;
-		var password = $("#password").val();
+			// Gives feedback to users about their password's strength
+			// utilizing simple criteria
+			function passwordStrength() {
+				var strength = ["", "Weak", "Okay", "Good", "Strong", "Very strong"];
+				var score = 0;
+				var password = $("#password").val();
 
-		// increase score for pass length of at least 8
-		if (password.length > 0) score++;
+				// increase score for pass length of at least 8
+				if (password.length > 0) score++;
 
-		// increase score if pass contains both a lowercase and uppercase letter
-		if ( (password.match(/[a-z]/)) && (password.match(/[A-Z]/)) ) score++;
+				// increase score if pass contains both a lowercase and uppercase letter
+				if ( (password.match(/[a-z]/)) && (password.match(/[A-Z]/)) ) score++;
 
-		// increase score if pass contains a number
-		if (password.match(/\d+/)) score++;
+				// increase score if pass contains a number
+				if (password.match(/\d+/)) score++;
 
-		// increase score if pass contains at least 1 symbol
-		if (password.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/)) score++;
+				// increase score if pass contains at least 1 symbol
+				if (password.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/)) score++;
 
-		// increase score if pass length of at least 12
-		if (password.length > 12) score++;
+				// increase score if pass length of at least 12
+				if (password.length > 12) score++;
 
-		// provide feedback to user
-		var percent = "" + score*20 + "%";
-		$("#strength-bar").css("width", percent).html(strength[score]);
-	}
+				// provide feedback to user
+				var percent = "" + score*20 + "%";
+				$("#strength-bar").css("width", percent).html(strength[score]);
+			}
 
-        $(document).ready(function () {
+			$(document).ready(function () {
 
-	   $("#password").keyup(function() {
-		passwordStrength();
-	   });
+				$("#password").keyup(function() {
+					passwordStrength();
+				});
 
-	    // activate all popovers
-            $(function () {
-                $('[data-toggle="popover"]').popover();
-            });
+				// activate all popovers
+				$(function () {
+					$('[data-toggle="popover"]').popover();
+				});
 
+				// validate the form
                 $('#account-form').parsley().subscribe('parsley:form:validate', function (formInstance) {
 
-                    var firstName = formInstance.isValid('block1', true);
+					var firstName = formInstance.isValid('block1', true);
                     var lastName = formInstance.isValid('block2', true);
                     var username = formInstance.isValid('block3', true);
                     var password = formInstance.isValid('block4', true);
