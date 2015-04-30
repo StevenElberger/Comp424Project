@@ -86,7 +86,7 @@
 							$phone = test_input($_POST["phone"]);
 						
 						if (!is_empty_or_null($_POST["birthday"]))
-							$email = test_input($_POST["birthday"]);
+							$birthday = test_input($_POST["birthday"]);
 						
 						if (!is_empty_or_null($_POST["g-recaptcha-response"]))
 							$captcha = test_input($_POST["g-recaptcha-response"]);
@@ -183,8 +183,8 @@
 						// As long as all variables were initialized, the data is good to go
 						if (($first_name !== "") && ($last_name !== "") && ($username !== "") && ($company !== "") && ($email !== "")
 							&& ($securityAnswer !== "") &&($phone !== "") && ($password !== "") && ($confirm !== "") && 
-							($securityQuestion !== "") && ($mismatchError === "") && ($birthday !== "") && ($securityQuestion2 !== "")
-							&& ($securityAnswer2 !== "") && ($captcha_error === "")) {
+							($security_question !== "") && ($mismatchError === "") && ($birthday !== "") && ($security_question_2 !== "")
+							&& ($security_answer_2 !== "") && ($captcha_error === "")) {
 					 
 							// validate user's captcha - send POST to Google
 							$url = 'https://www.google.com/recaptcha/api/siteverify';
