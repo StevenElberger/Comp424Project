@@ -1,5 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-	"http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 	<head>
         <meta charset="utf-8">
@@ -19,17 +18,18 @@
             session_start();
             // Make sure the session is still active
             validate_user_before_displaying();
-	    $username = $_SESSION["username"];
+			$username = $_SESSION["username"];
 
-	    $conn = new mysqli(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
+			$conn = new mysqli(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
 
-	    $last_login_sql = "UPDATE users SET last_login = '" . time() . "' WHERE username = '" . $username . "'";
-	    $last_login = $conn->query($last_login_sql);
-	    $time = date('r', $_SESSION["last_login"]);
+			// grab and convert last login time
+			$last_login_sql = "UPDATE users SET last_login = '" . time() . "' WHERE username = '" . $username . "'";
+			$last_login = $conn->query($last_login_sql);
+			$time = date('r', $_SESSION["last_login"]);
 
-	    // get times logged in
-	    $times_logged_in = $_SESSION["times_logged_in"];
-	?>
+			// get times logged in
+			$times_logged_in = $_SESSION["times_logged_in"];
+		?>
 	</head>
     <body>
         <!-- begin navigation bar -->
@@ -84,29 +84,10 @@
         <!-- Form validation from Parsley -->
         <script src="js/parsley.min.js"></script>
         <script type="text/javascript">
-            // used for pulling info from database
-            function testAJAX() {
-		$.ajax({
-			url: "update_login.php",
-			type: "POST",
-			success: function (data) {
-				alert(data);
-			},
-			complete: function() {
-				alert("Complete");
-			},
-			error: function (e) {
-				console.log("Error:", e);
-			}
-		});
-	    }
-
             $(document).ready(function(){
 
                 // show the welcome screen
                 $("#welcome-jumbo").fadeIn(800).removeClass('hidden');
-
-		//testAJAX();
                 
             });
         </script>
