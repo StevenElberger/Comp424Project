@@ -217,7 +217,7 @@
                             <label>First Name:</label>
                             <div class="input-group">
                                 <span class="input-group-addon"><span class="glyphicon">FN</span></span>
-                                <input type="text" name="first_name" id="first-name" class="form-control" data-toggle="tooltip" data-placement="right" title="Wenis" value="<?php echo $first_name; ?>" data-parsley-required="true" data-parsley-length="[3, 32]" data-parsley-group="block1" data-parsley-ui-enabled="false">
+                                <input type="text" name="first_name" id="first-name" class="form-control" data-toggle="tooltip" data-placement="right" value="<?php echo $first_name; ?>" data-parsley-required="true" data-parsley-length="[3, 32]" data-parsley-group="block1" data-parsley-ui-enabled="false">
                             </div>
                         </div>
                     </div>
