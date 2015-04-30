@@ -64,7 +64,7 @@
 	                    $throttle_delay = throttle_failed_logins($username);
 	                    if ($throttle_delay > 0) {
 							// Throttled at the moment, try again after delay period
-							set_error_string($bad_authentication, "throttle");
+							set_error_string($bad_authentication, "throttle", $throttle_delay);
 
 							$log_info = "A User attempted many times to login using username, " . $username . ", and failed. IP Address: " . $_SERVER['REMOTE_ADDR'];
 							log_error("Failed Login", $log_info);
@@ -113,7 +113,7 @@
 									$log_info = "A User attempted to login with username, " .$username . " has attempted to login to the site and failed";
 									log_activity("Login", $log_info);
 									// build feedback string for users
-									set_error_string($bad_authentication, "authentication");
+									set_error_string($bad_authentication, "authentication", 0);
 								}
 							}
 							$conn->close();
@@ -122,7 +122,7 @@
 	                    // no such username
 	                    $log_info = "A User attempted to login with username, " . $username . ", and failed, username does not exists";
 	                    log_activity("Login", $log_info);
-	                    set_error_string($bad_authentication, "authentication");
+	                    set_error_string($bad_authentication, "authentication", 0);
 	                }
 	            }
 			} else {
@@ -145,7 +145,7 @@
             return $result->num_rows > 0;
         }
 		// Don't let the user know which piece of data was incorrect
-		function set_error_string($error_string, $error) {
+		function set_error_string($error_string, $error, $throttle_delay) {
 			if ($error == "authentication") {
 				$error_string = "<div class='alert alert-danger' role='alert'>";
 				$error_string .= "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>";
