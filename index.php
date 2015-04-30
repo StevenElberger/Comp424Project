@@ -64,14 +64,12 @@
 	                    $throttle_delay = throttle_failed_logins($username);
 	                    if ($throttle_delay > 0) {
 							// Throttled at the moment, try again after delay period
-							set_error_string($bad_authentication, "throttle", $throttle_delay);
+							set_error_string("throttle", $throttle_delay);
 
 							$log_info = "A User attempted many times to login using username, " . $username . ", and failed. IP Address: " . $_SERVER['REMOTE_ADDR'];
 							log_error("Failed Login", $log_info);
 	                    } else {
-	                        // not throttled - make connection to db
-	                        // and check the credentials
-							// Create connection
+	                        // not throttled - make connection to db and check credentials
 							$conn = new mysqli(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
 							// Check connection
 							if ($conn->connect_error) {
@@ -113,7 +111,7 @@
 									$log_info = "A User attempted to login with username, " .$username . " has attempted to login to the site and failed";
 									log_activity("Login", $log_info);
 									// build feedback string for users
-									set_error_string($bad_authentication, "authentication", 0);
+									set_error_string("authentication", 0);
 								}
 							}
 							$conn->close();
@@ -122,7 +120,7 @@
 	                    // no such username
 	                    $log_info = "A User attempted to login with username, " . $username . ", and failed, username does not exists";
 	                    log_activity("Login", $log_info);
-	                    set_error_string($bad_authentication, "authentication", 0);
+	                    set_error_string("authentication", 0);
 	                }
 	            }
 			} else {
@@ -145,20 +143,20 @@
             return $result->num_rows > 0;
         }
 		// Don't let the user know which piece of data was incorrect
-		function set_error_string($error_string, $error, $throttle_delay) {
+		function set_error_string($error, $throttle_delay) {
 			if ($error == "authentication") {
-				$error_string = "<div class='alert alert-danger' role='alert'>";
-				$error_string .= "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>";
-				$error_string .= "<span class='sr-only'>Error:</span>";
-				$error_string .= "<span> Incorrect username or password</span>";
-				$error_string .= "</div>";
+				$bad_authentication = "<div class='alert alert-danger' role='alert'>";
+				$bad_authentication .= "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>";
+				$bad_authentication .= "<span class='sr-only'>Error:</span>";
+				$bad_authentication .= "<span> Incorrect username or password</span>";
+				$bad_authentication .= "</div>";
 			} else if ($error == "throttle") {
-				$error_string = "<div class='alert alert-danger login-error' role='alert'>";
-				$error_string .= "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>";
-				$error_string .= "<span class='sr-only'>Error:</span>";
-				$error_string .= "<span>Too many failed logins.</span>";
-				$error_string .= "<span>You must wait {$throttle_delay} minutes before you can attempt another login.</span>";
-				$error_string .= "</div>";
+				$bad_authentication = "<div class='alert alert-danger login-error' role='alert'>";
+				$bad_authentication .= "<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>";
+				$bad_authentication .= "<span class='sr-only'>Error:</span>";
+				$bad_authentication .= "<span>Too many failed logins.</span>";
+				$bad_authentication .= "<span>You must wait {$throttle_delay} minutes before you can attempt another login.</span>";
+				$bad_authentication .= "</div>";
 			}
 		}
     ?>
