@@ -333,6 +333,7 @@
                             </div>
 							<div class="g-recaptcha" data-sitekey="6LcqUAUTAAAAADohUaXzn21dr-RA-cLz6HODEVGX"></div>
                             <button type="submit" style="margin-top: 5%;" class="btn btn-lg btn-block btn-primary validate">Create Account</button>
+			    <a class="text-center" style="display: block;" href="/Comp424Project/index.php">Back to Login</a>
                         </div>
                     </div>
                 </form>

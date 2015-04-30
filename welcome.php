@@ -25,9 +25,7 @@
 
 	    $last_login_sql = "UPDATE users SET last_login = '" . time() . "' WHERE username = '" . $username . "'";
 	    $last_login = $conn->query($last_login_sql);
-	    $time = $_SESSION["last_login"];
-	    $dt = new DateTime("@$time");
-	    $time = $dt->format("D M j G:i:s T Y");
+	    $time = date('r', $_SESSION["last_login"]);
 
 	    // get times logged in
 	    $times_logged_in = $_SESSION["times_logged_in"];
