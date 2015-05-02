@@ -27,8 +27,8 @@
 			$conn = new mysqli(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
 
 			// grab and convert last login time
-			$last_login_sql = "UPDATE users SET last_login = '" . time() . "' WHERE username = '" . $username . "'";
-			$last_login = $conn->query($last_login_sql);
+			//$last_login_sql = "UPDATE users SET last_login = '" . time() . "' WHERE username = '" . $username . "'";
+			//$last_login = $conn->query($last_login_sql);
 
 			// get times logged in
 			$times_logged_in = $_SESSION["times_logged_in"];
