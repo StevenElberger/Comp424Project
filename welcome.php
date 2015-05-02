@@ -18,11 +18,13 @@
             session_start();
             // Make sure the session is still active
             validate_user_before_displaying();
+			
 			$username = $_SESSION["username"];
-
-			$conn = new mysqli(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
-
+			$first_name = $_SESSION["first_name"];
+			$last_name = $_SESSION["last_name"];
 			$time = date('r', $_SESSION["last_login"]);
+			
+			$conn = new mysqli(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
 
 			// grab and convert last login time
 			$last_login_sql = "UPDATE users SET last_login = '" . time() . "' WHERE username = '" . $username . "'";
@@ -66,7 +68,7 @@
             <!-- Contains the welcome information -->
             <div class="container" id="welcome-container">
 
-                <h1>Welcome, <span id="username"><?php echo $username; ?></span>!</h1>
+                <h1>Welcome, <span id="username"><?php echo $first_name . " " . $last_name; ?></span>!</h1>
 
                 <div class="panel panel-default">
                     <div class="panel-body">
