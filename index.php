@@ -26,7 +26,7 @@
         $bad_authentication = "";
         $message = "";
         session_start();
-		
+
         /*
 		*  First, check if the request is POST
 		*  Then make sure the domain is not being forged
@@ -44,20 +44,20 @@
 					if (isset($_POST["username"]) && !empty($_POST["username"])) {
 						$username = test_input($_POST["username"]);
 					}
-					
+
 					if (isset($_POST["password"]) && !empty($_POST["password"])) {
 						$password = test_input($_POST["password"]);
 					}
 
 	                $conn = new mysqli(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
-	                
+
 	                // Check connection
 					if ($conn->connect_error) {
 						die("Connection failed: " . $conn->connect_error);
 						$log_info = "Connection to DB Failed in Login";
 						log_error("DB Connection Error", $log_info);
 					}
-	                
+
 	                // check to make sure username actually exists
 	                if (username_exists($username, $conn)) {
 	                    // then check if the user is throttled
@@ -77,7 +77,7 @@
 							}
 							// Grab the password for the given username
 							$sql = "SELECT * FROM users WHERE username = '" . $username . "'";
-							
+
 							$result = $conn->query($sql);
 							// If there's a match, check to make sure authentication was successful
 							if ($result->num_rows > 0) {
@@ -86,24 +86,33 @@
 								// We know the username matches so check the password against the hash
 								if (password_verify($password, $row["password"]) && $valid != 0) {
 									// grab some information about the user
-									$grab_user_info_sql = "SELECT last_login, times_logged_in, first_name, last_name FROM users WHERE username = '" . $username . "'";
-									$user_info = $conn->query($grab_user_info_sql);
-									if ($user_info->num_rows > 0) {
-										$row = $user_info->fetch_assoc();
-										$_SESSION["last_login"] = $row["last_login"];
-										$_SESSION["times_logged_in"] = $row["times_logged_in"];
-										$_SESSION["first_name"] = $row["first_name"];
-										$_SESSION["last_name"] = $row["last_name"];
+									//$grab_user_info_sql = "SELECT last_login, times_logged_in, first_name, last_name FROM users WHERE username = '" . $username . "'";
+									//$user_info = $conn->query($grab_user_info_sql);
+									//if ($user_info->num_rows > 0) {
+									//	$row = $user_info->fetch_assoc();
+									//	$_SESSION["last_login"] = $row["last_login"];
+									//	$_SESSION["times_logged_in"] = $row["times_logged_in"];
+									//	$_SESSION["first_name"] = $row["first_name"];
+									//	$_SESSION["last_name"] = $row["last_name"];
 										// update some information about the user
-										$times_logged_in_increment = $row["times_logged_in"] + 1;
-										$update_times_logged_in_sql = "UPDATE users SET times_logged_in = '" . $times_logged_in_increment . "'  WHERE username = '" . $username . "'";
-										$update_times_logged_in = $conn->query($update_times_logged_in_sql);
+									//	$times_logged_in_increment = $row["times_logged_in"] + 1;
+									//	$update_times_logged_in_sql = "UPDATE users SET times_logged_in = '" . $times_logged_in_increment . "'  WHERE username = '" . $username . "'";
+									//	$update_times_logged_in = $conn->query($update_times_logged_in_sql);
 										// grab and convert last login time
-										$last_login_sql = "UPDATE users SET last_login = '" . time() . "' WHERE username = '" . $username . "'";
-										$last_login = $conn->query($last_login_sql);
-									}
+									//	$last_login_sql = "UPDATE users SET last_login = '" . date('r', time()) . "' WHERE username = '" . $username . "'";
+									//	$last_login = $conn->query($last_login_sql);
+									//}
+									echo $row["last_login"];
+									$_SESSION["last_login"] = $row["last_login"];
+									echo $_SESSION["last_login"];
+									$_SESSION["times_logged_in"] = $row["times_logged_in"];
+									$_SESSION["first_name"] = $row["first_name"];
+									$_SESSION["last_name"] = $row["last_name"];
 									$_SESSION["username"] = $username;
-									clear_failed_login($username);
+									$times_logged_in_increment = $row["times_logged_in"] + 1;
+									$update_user_info_sql = "UPDATE users SET times_logged_in = '" . $times_logged_in_increment . "' WHERE username = '" . $username . "'";
+									$update_user_info = $conn->query($update_user_info_sql);
+									//clear_failed_login($username);
 									after_successful_login();
 									$log_info = "A User attempted to login with username, " . $username . " and was successful";
 									log_activity("Login", $log_info);
