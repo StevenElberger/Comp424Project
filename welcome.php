@@ -19,18 +19,11 @@
             // Make sure the session is still active
             validate_user_before_displaying();
 
+			// Grab user information
 			$username = $_SESSION["username"];
 			$first_name = $_SESSION["first_name"];
-			$last_name = $_SESSION["last_name"];
-//			$time = date('F j, Y, g:i a', $_SESSION["last_login"]); // r
-			echo $_SESSION["last_login"];
-//			$epoch = $_SESSION["last_login"];
-//			$time = new DateTime("@$epoch", new DateTimeZone('America/Los_Angeles'));
-//			$target_timezone = new DateTimeZone('America/Los_Angeles');
-//			$time->setTimeZone($target_timezone);
-//			$time = $time->format('Y-m-d H:i:s');
-
-			// get times logged in
+			$last_name = $_SESSION["last_name"];			
+			$time = date('r', $_SESSION["last_user_login"]); //'F j, Y, g:i a'
 			$times_logged_in = $_SESSION["times_logged_in"];
 		?>
 	</head>
@@ -72,7 +65,7 @@
 
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        Your last login was on <?php //echo $time; ?>. You have logged in previously <span id="result"><?php echo $times_logged_in; ?></span> times.
+                        Your last login was on <?php echo $time; ?>. You have logged in previously <span id="result"><?php echo $times_logged_in; ?></span> times.
 			Download the confidential file <a href="/Comp424Project/private/company_confidential_file.txt" download>here</a>.
                     </div>
                 </div>

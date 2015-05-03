@@ -85,34 +85,16 @@
 								$valid = $row["valid"];
 								// We know the username matches so check the password against the hash
 								if (password_verify($password, $row["password"]) && $valid != 0) {
-									// grab some information about the user
-									//$grab_user_info_sql = "SELECT last_login, times_logged_in, first_name, last_name FROM users WHERE username = '" . $username . "'";
-									//$user_info = $conn->query($grab_user_info_sql);
-									//if ($user_info->num_rows > 0) {
-									//	$row = $user_info->fetch_assoc();
-									//	$_SESSION["last_login"] = $row["last_login"];
-									//	$_SESSION["times_logged_in"] = $row["times_logged_in"];
-									//	$_SESSION["first_name"] = $row["first_name"];
-									//	$_SESSION["last_name"] = $row["last_name"];
-										// update some information about the user
-									//	$times_logged_in_increment = $row["times_logged_in"] + 1;
-									//	$update_times_logged_in_sql = "UPDATE users SET times_logged_in = '" . $times_logged_in_increment . "'  WHERE username = '" . $username . "'";
-									//	$update_times_logged_in = $conn->query($update_times_logged_in_sql);
-										// grab and convert last login time
-									//	$last_login_sql = "UPDATE users SET last_login = '" . date('r', time()) . "' WHERE username = '" . $username . "'";
-									//	$last_login = $conn->query($last_login_sql);
-									//}
-									echo $row["last_login"];
-									$_SESSION["last_login"] = $row["last_login"];
-									echo $_SESSION["last_login"];
+									// Grab the user's information for displaying and updating
+									$_SESSION["last_user_login"] = $row["last_login"];
 									$_SESSION["times_logged_in"] = $row["times_logged_in"];
 									$_SESSION["first_name"] = $row["first_name"];
 									$_SESSION["last_name"] = $row["last_name"];
 									$_SESSION["username"] = $username;
 									$times_logged_in_increment = $row["times_logged_in"] + 1;
-									$update_user_info_sql = "UPDATE users SET times_logged_in = '" . $times_logged_in_increment . "' WHERE username = '" . $username . "'";
+									$update_user_info_sql = "UPDATE users SET times_logged_in = '" . $times_logged_in_increment . "', last_login = '" . time() . "' WHERE username = '" . $username . "'";
 									$update_user_info = $conn->query($update_user_info_sql);
-									//clear_failed_login($username);
+									clear_failed_login($username);
 									after_successful_login();
 									$log_info = "A User attempted to login with username, " . $username . " and was successful";
 									log_activity("Login", $log_info);
